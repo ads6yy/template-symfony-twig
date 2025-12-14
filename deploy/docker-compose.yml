@@ -1,0 +1,31 @@
+services:
+  mariadb:
+    container_name: symfony-mariadb
+    build:
+      context: ./db
+      target: client_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - symfony-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    ports:
+      - "3400:3306"
+
+  php:
+    container_name: symfony-php-apache
+    build:
+      context: ./php
+      target: client_php
+    volumes:
+      - ../:/srv
+      - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./php/php.ini:/usr/local/etc/php/conf.d/000-php.ini
+    ports:
+        - '8400:80'
+
+volumes:
+  symfony-data: {}
