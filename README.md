@@ -1,4 +1,4 @@
-# Symfony + Twig Reference
+# Symfony + Twig
 
 This repository serves as a **reference implementation** for standard web application features using **Symfony** and **Twig**.
 
@@ -12,9 +12,24 @@ Instead of being a blank starter kit, this project implements "classic" function
 ## 🛠️ Tech Stack
 
 * **Framework:** Symfony
-* **Template Engine:** Twig
+* **Frontend:** Twig
 * **Language:** PHP 8+
-* **Environment:** Docker (custom configuration for reference)
+* **Environment:** Docker
+
+## 📅 Roadmap & Upcoming Features
+
+This project is evolving as I implement more "classic" modules. You can track the progress of specific features below:
+
+| Feature / Module | Description | Status |
+| :--- | :--- | :--- |
+| **User Authentication** | Standard Login/Registration using Symfony Security. | ⏳ Todo |
+| **Database & Entity** | Clean implementation of Doctrine Entities and Migrations. | ⏳ Todo |
+| **Admin Dashboard** | Basic administration area for content management. | ⏳ Todo |
+| **Contact Form** | Form handling with validation and email notification. | ⏳ Todo |
+| **Service Layer** | Patterns for decoupling business logic from Controllers. | ⏳ Todo |
+| **Asset Management** | AssetMapper or Webpack Encore standard configuration. | ⏳ Todo |
+
+*Progress tracked via [Template - Symfony Twig](https://github.com/users/ads6yy/projects/1).*
 
 ## 📄 License
 
