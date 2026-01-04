@@ -13,6 +13,7 @@ jobs:
     outputs:
       cache-key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
     steps:
+      - uses: actions/checkout@v4
       - run: echo "Cache key set"
 
   phpstan:
