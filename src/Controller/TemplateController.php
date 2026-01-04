@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Psr\Log\LoggerInterface;
@@ -11,18 +13,17 @@ final class TemplateController extends AbstractController
 {
     public function __construct(
         protected LoggerInterface $logger,
-    )
-    {
+    ) {
     }
 
     #[Route('/', name: 'app_template')]
     public function index(): Response
     {
-        $this->logger->info("app_template - start");
+        $this->logger->info('app_template - start');
 
         // todo
 
-        $this->logger->info("app_template - end");
+        $this->logger->info('app_template - end');
 
         return $this->render('template/index.html.twig', [
             'controller_name' => 'TemplateController',

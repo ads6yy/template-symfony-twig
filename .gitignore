@@ -11,3 +11,7 @@
 
 /.idea/*
 /deploy/docker-compose.override.yml
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###

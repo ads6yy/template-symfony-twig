@@ -19,9 +19,13 @@
         "symfony/monolog-bundle": "^4.0",
         "symfony/runtime": "8.0.*",
         "symfony/twig-bundle": "8.0.*",
-        "symfony/yaml": "8.0.*"
+        "symfony/yaml": "8.0.*",
+        "systemsdk/phpcpd": "^8.2"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.92",
+        "phpmd/phpmd": "^2.5",
+        "phpstan/phpstan": "^2.1",
         "symfony/maker-bundle": "^1.65",
         "symfony/stopwatch": "8.0.*",
         "symfony/web-profiler-bundle": "8.0.*"
