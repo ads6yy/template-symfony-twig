@@ -19,17 +19,23 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-
-            # Activate different ways to authenticate:
-            # https://symfony.com/doc/current/security.html#the-firewall
+            form_login:
+                login_path: app_auth_login
+                check_path: app_auth_login
+                enable_csrf: true
+            logout:
+                path: app_auth_logout
+                target: app_template
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/register, roles: PUBLIC_ACCESS }
+        - { path: ^/users, roles: ROLE_ADMIN }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

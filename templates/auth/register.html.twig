@@ -1,0 +1,68 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Inscription - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">✍️ Inscription</h2>
+
+                {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {attr: {class: 'form-control'}}) }}
+                        {% if form.email.vars.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.vars.errors %}
+                                    {{ error.message }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.firstName) }}
+                                {{ form_widget(form.firstName, {attr: {class: 'form-control'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.lastName) }}
+                                {{ form_widget(form.lastName, {attr: {class: 'form-control'}}) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.password) }}
+                        {{ form_widget(form.password, {attr: {class: 'form-control'}}) }}
+                        {% if form.password.vars.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password.vars.errors %}
+                                    {{ error.message }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        S'inscrire
+                    </button>
+                {{ form_end(form) }}
+
+                <hr>
+
+                <p class="text-center">
+                    Déjà inscrit ?
+                    <a href="{{ path('app_auth_login') }}">Se connecter</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
