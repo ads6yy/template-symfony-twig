@@ -1,0 +1,61 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Login - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">🔐 Login</h2>
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_auth_login_check') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Email</label>
+                        <input
+                            type="email"
+                            id="username"
+                            name="_username"
+                            class="form-control"
+                            value="{{ last_username }}"
+                            required
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="_password"
+                            class="form-control"
+                            required
+                        >
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Login
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center">
+                    Not registered yet?
+                    <a href="{{ path('app_auth_register') }}">Create an account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

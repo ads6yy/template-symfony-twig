@@ -1,0 +1,75 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Edit User - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning">
+                <h2 class="mb-0">✏️ Edit User: {{ user.email }}</h2>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {attr: {class: 'form-control'}}) }}
+                        {% if form.email.vars.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.vars.errors %}
+                                    <small class="text-danger">{{ error.message }}</small><br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.firstName) }}
+                                {{ form_widget(form.firstName, {attr: {class: 'form-control'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form_label(form.lastName) }}
+                                {{ form_widget(form.lastName, {attr: {class: 'form-control'}}) }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% if form.roles is defined %}
+                        <div class="mb-3">
+                            {{ form_label(form.roles) }}
+                            <div>
+                                {% for role_field in form.roles %}
+                                    <div class="form-check">
+                                        {{ form_widget(role_field, {attr: {class: 'form-check-input'}}) }}
+                                        {{ form_label(role_field, null, {label_attr: {class: 'form-check-label'}}) }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
+                            {{ form_label(form.isActive, 'Active', {label_attr: {class: 'form-check-label'}}) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            💾 Save Changes
+                        </button>
+                        <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-secondary">
+                            ← Cancel
+                        </a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
