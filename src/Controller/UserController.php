@@ -61,7 +61,9 @@ final class UserController extends AbstractController
         $this->logger->info('New user creation form accessed');
 
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'is_admin' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -92,25 +94,30 @@ final class UserController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que votre profil.');
         }
 
-        $this->logger->info('User edit form accessed', ['id' => $user->getId()]);
+        $this->logger->info('User edit form accessed', ['id' => $user->id]);
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'is_admin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('password')->getData();
-            if ($plainPassword) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
-                $user->setPassword($hashedPassword);
+            // Le champ password n'existe que lors de la création
+            if ($form->has('password')) {
+                $plainPassword = $form->get('password')->getData();
+                if ($plainPassword) {
+                    $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+                    $user->setPassword($hashedPassword);
+                }
             }
 
             $user->setUpdatedAt(new DateTimeImmutable());
             $this->entityManager->flush();
 
-            $this->logger->info('User updated', ['id' => $user->getId()]);
+            $this->logger->info('User updated', ['id' => $user->id]);
             $this->addFlash('success', 'Utilisateur modifié avec succès !');
 
-            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_user_show', ['id' => $user->id]);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -123,9 +130,10 @@ final class UserController extends AbstractController
     public function delete(Request $request, User $user): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $this->logger->info('User deletion requested', ['id' => $user->getId()]);
+        $this->logger->info('User deletion requested', ['id' => $user->id]);
 
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
+            && $this->isCsrfTokenValid('delete'.$user->id, $request->request->get('_token'))) {
             $this->entityManager->remove($user);
             $this->entityManager->flush();
 
@@ -143,14 +151,15 @@ final class UserController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        if ($this->isCsrfTokenValid('toggle'.$user->getId(), $request->request->get('_token'))) {
+        if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
+            && $this->isCsrfTokenValid('toggle'.$user->id, $request->request->get('_token'))) {
             $user->setIsActive(!$user->isActive());
             $this->entityManager->flush();
 
-            $this->logger->info('User active status toggled', ['id' => $user->getId(), 'active' => $user->isActive()]);
+            $this->logger->info('User active status toggled', ['id' => $user->id, 'active' => $user->isActive()]);
             $this->addFlash('success', 'Statut utilisateur modifié.');
         }
 
-        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+        return $this->redirectToRoute('app_user_show', ['id' => $user->id]);
     }
 }

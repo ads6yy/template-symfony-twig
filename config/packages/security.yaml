@@ -21,8 +21,11 @@ security:
             provider: app_user_provider
             form_login:
                 login_path: app_auth_login
-                check_path: app_auth_login
+                check_path: app_auth_login_check
                 enable_csrf: true
+                username_parameter: _username
+                password_parameter: _password
+                success_handler: App\Security\AuthenticationSuccessHandler
             logout:
                 path: app_auth_logout
                 target: app_template
@@ -34,7 +37,11 @@ security:
     access_control:
         - { path: ^/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/auth/register, roles: PUBLIC_ACCESS }
-        - { path: ^/users, roles: ROLE_ADMIN }
+        - { path: ^/users$, roles: ROLE_ADMIN }
+        - { path: ^/users/new, roles: ROLE_ADMIN }
+        - { path: ^/users/.+/delete, roles: ROLE_ADMIN }
+        - { path: ^/users/.+/toggle-active, roles: ROLE_ADMIN }
+        - { path: ^/users, roles: ROLE_USER }
         - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:

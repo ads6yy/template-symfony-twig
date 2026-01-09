@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -17,7 +18,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    public ?int $id = null {
+        get {
+            return $this->id;
+        }
+    }
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
@@ -44,7 +49,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isActive = true;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private DateTimeImmutable $createdAt;
+    public DateTimeImmutable $createdAt {
+        get {
+            return $this->createdAt;
+        }
+    }
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $updatedAt;
@@ -54,11 +63,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
         $this->isActive = true;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getEmail(): ?string
@@ -76,11 +80,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * A visual identifier that represents this user.
      *
+     * @return non-empty-string
+     *
      * @see UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        if (!is_string($this->email) || $this->email === '') {
+            throw new LogicException('User identifier (email) is not set.');
+        }
+
+        return $this->email;
     }
 
     /**
@@ -164,11 +174,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
@@ -187,7 +192,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __serialize(): array
     {
         $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        if ($this->password !== null) {
+            $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        }
 
         return $data;
     }

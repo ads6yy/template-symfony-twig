@@ -38,24 +38,23 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" placeholder="Laisser vide pour ne pas modifier">
-                    </div>
 
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if form.roles is defined %}
                         <div class="mb-3">
                             {{ form_label(form.roles) }}
                             <div>
-                                {{ form_widget(form.roles) }}
+                                {% for role_field in form.roles %}
+                                    <div class="form-check">
+                                        {{ form_widget(role_field, {attr: {class: 'form-check-input'}}) }}
+                                        {{ form_label(role_field, null, {label_attr: {class: 'form-check-label'}}) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form_label(form.isActive, 'Utilisateur actif') }}
-                            <div>
-                                {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
-                            </div>
+                        <div class="form-check mb-3">
+                            {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
+                            {{ form_label(form.isActive, 'Actif', {label_attr: {class: 'form-check-label'}}) }}
                         </div>
                     {% endif %}
 

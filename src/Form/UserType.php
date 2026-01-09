@@ -20,7 +20,8 @@ final class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $isEdit = null !== $options['data']->getId() ?? false;
+        $isEdit = $options['data'] instanceof User && null !== $options['data']->id;
+        $isAdmin = $options['is_admin'] ?? false;
 
         $builder
             ->add('email', EmailType::class, [
@@ -48,26 +49,30 @@ final class UserType extends AbstractType
             ]);
         }
 
-        $builder
-            ->add('isActive', CheckboxType::class, [
-                'required' => false,
-                'attr' => ['class' => 'form-check-input'],
-            ])
-            ->add('roles', ChoiceType::class, [
-                'multiple' => true,
-                'expanded' => true,
-                'choices' => [
-                    'Utilisateur' => 'ROLE_USER',
-                    'Administrateur' => 'ROLE_ADMIN',
-                ],
-                'attr' => ['class' => 'form-check-input'],
-            ]);
+        // Seulement les admins peuvent modifier les rôles et le statut
+        if ($isAdmin) {
+            $builder
+                ->add('isActive', CheckboxType::class, [
+                    'required' => false,
+                    'attr' => ['class' => 'form-check-input'],
+                ])
+                ->add('roles', ChoiceType::class, [
+                    'multiple' => true,
+                    'expanded' => true,
+                    'choices' => [
+                        'Utilisateur' => 'ROLE_USER',
+                        'Administrateur' => 'ROLE_ADMIN',
+                    ],
+                    'attr' => ['class' => 'form-check-input'],
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_admin' => false,
         ]);
     }
 }

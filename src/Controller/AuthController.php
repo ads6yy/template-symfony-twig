@@ -44,6 +44,12 @@ final class AuthController extends AbstractController
         ]);
     }
 
+    #[Route('/login_check', name: 'login_check', methods: ['POST'])]
+    public function loginCheck(): void
+    {
+        throw new LogicException('This method will be intercepted by the security firewall.');
+    }
+
     #[Route('/logout', name: 'logout', methods: ['GET'])]
     public function logout(): void
     {
