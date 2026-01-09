@@ -24,15 +24,15 @@ final readonly class AuthenticationSuccessHandler implements AuthenticationSucce
         $user = $token->getUser();
 
         if (!$user instanceof User) {
-            throw new LogicException('L\'utilisateur authentifié doit être une instance de App\Entity\User.');
+            throw new LogicException('The authenticated user must be an instance of App\Entity\User.');
         }
 
-        // Les admins vont à la liste des utilisateurs
+        // Admins go to the user list
         if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new RedirectResponse($this->router->generate('app_user_index'));
         }
 
-        // Les utilisateurs réguliers vont à leur profil
-        return new RedirectResponse($this->router->generate('app_user_show', ['id' => $user->id]));
+        // Regular users go to their profile
+        return new RedirectResponse($this->router->generate('app_user_show', ['id' => $user->getId()]));
     }
 }

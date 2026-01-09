@@ -13,40 +13,45 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * @extends AbstractType<array{email: string, firstName?: string, lastName?: string, password: string}>
+ */
 final class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new NotBlank(),
-                    new Email(),
+                    new NotBlank(message: 'Please enter an email address.'),
+                    new Email(message: 'Please enter a valid email address.'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'votre@email.com'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'your@email.com'],
             ])
             ->add('firstName', TextType::class, [
-                'label' => 'Prénom',
+                'label' => 'First Name',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Prénom'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'First Name'],
             ])
             ->add('lastName', TextType::class, [
-                'label' => 'Nom',
+                'label' => 'Last Name',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Nom'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Last Name'],
             ])
             ->add('password', PasswordType::class, [
+                'label' => 'Password',
                 'constraints' => [
-                    new NotBlank(),
+                    new NotBlank(message: 'Please enter a password.'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Mot de passe'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Password'],
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null,
+            // No data_class, form returns an array
         ]);
     }
 }

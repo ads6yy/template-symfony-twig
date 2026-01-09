@@ -1,13 +1,13 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Inscription - {{ parent() }}{% endblock %}
+{% block title %}Registration - {{ parent() }}{% endblock %}
 
 {% block body %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-body">
-                <h2 class="card-title text-center mb-4">✍️ Inscription</h2>
+                <h2 class="card-title text-center mb-4">✍️ Registration</h2>
 
                 {{ form_start(form) }}
                     <div class="mb-3">
@@ -50,15 +50,15 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        S'inscrire
+                        Register
                     </button>
                 {{ form_end(form) }}
 
                 <hr>
 
                 <p class="text-center">
-                    Déjà inscrit ?
-                    <a href="{{ path('app_auth_login') }}">Se connecter</a>
+                    Already registered?
+                    <a href="{{ path('app_auth_login') }}">Login</a>
                 </p>
             </div>
         </div>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
@@ -75,7 +76,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User created', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'Utilisateur créé avec succès !');
+            $this->addFlash('success', 'User created successfully!');
 
             return $this->redirectToRoute('app_user_index');
         }
@@ -91,10 +92,10 @@ final class UserController extends AbstractController
         $currentUser = $this->getUser();
 
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que votre profil.');
+            throw $this->createAccessDeniedException('You can only edit your own profile.');
         }
 
-        $this->logger->info('User edit form accessed', ['id' => $user->id]);
+        $this->logger->info('User edit form accessed', ['id' => $user->getId()]);
 
         $form = $this->createForm(UserType::class, $user, [
             'is_admin' => $this->isGranted('ROLE_ADMIN'),
@@ -114,10 +115,10 @@ final class UserController extends AbstractController
             $user->setUpdatedAt(new DateTimeImmutable());
             $this->entityManager->flush();
 
-            $this->logger->info('User updated', ['id' => $user->id]);
-            $this->addFlash('success', 'Utilisateur modifié avec succès !');
+            $this->logger->info('User updated', ['id' => $user->getId()]);
+            $this->addFlash('success', 'User updated successfully!');
 
-            return $this->redirectToRoute('app_user_show', ['id' => $user->id]);
+            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -130,17 +131,17 @@ final class UserController extends AbstractController
     public function delete(Request $request, User $user): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $this->logger->info('User deletion requested', ['id' => $user->id]);
+        $this->logger->info('User deletion requested', ['id' => $user->getId()]);
 
         if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
-            && $this->isCsrfTokenValid('delete'.$user->id, $request->request->get('_token'))) {
+            && $this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $this->entityManager->remove($user);
             $this->entityManager->flush();
 
             $this->logger->info('User deleted', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'Utilisateur supprimé avec succès !');
+            $this->addFlash('success', 'User deleted successfully!');
         } else {
-            $this->addFlash('error', 'Token CSRF invalide.');
+            $this->addFlash('error', 'Invalid CSRF token.');
         }
 
         return $this->redirectToRoute('app_user_index');
@@ -152,14 +153,82 @@ final class UserController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
-            && $this->isCsrfTokenValid('toggle'.$user->id, $request->request->get('_token'))) {
+            && $this->isCsrfTokenValid('toggle'.$user->getId(), $request->request->get('_token'))) {
             $user->setIsActive(!$user->isActive());
             $this->entityManager->flush();
 
-            $this->logger->info('User active status toggled', ['id' => $user->id, 'active' => $user->isActive()]);
-            $this->addFlash('success', 'Statut utilisateur modifié.');
+            $this->logger->info('User active status toggled', ['id' => $user->getId(), 'active' => $user->isActive()]);
+            $this->addFlash('success', 'User status updated.');
         }
 
-        return $this->redirectToRoute('app_user_show', ['id' => $user->id]);
+        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+    }
+
+    #[Route('/{id}/change-password', name: 'change_password', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    public function changePassword(Request $request, User $user): Response
+    {
+        $currentUser = $this->getUser();
+
+        // A user can change their password, admins can change any user's password
+        if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('You can only change your own password.');
+        }
+
+        $this->logger->info('Change password form accessed', ['id' => $user->getId()]);
+
+        // Admins don't need to enter the old password
+        $requireOldPassword = $currentUser === $user;
+
+        $form = $this->createForm(ChangePasswordType::class, [], [
+            'require_old_password' => $requireOldPassword,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Access unmapped form data
+            $oldPassword = $form->has('oldPassword') ? $form->get('oldPassword')->getData() : null;
+            $newPassword = $form->get('newPassword')->getData();
+            $confirmPassword = $form->get('confirmPassword')->getData();
+
+            // Check old password if user is changing their own password
+            if ($requireOldPassword && $oldPassword) {
+                if (!$this->passwordHasher->isPasswordValid($user, $oldPassword)) {
+                    $form->get('oldPassword')->addError(new \Symfony\Component\Form\FormError('The old password is incorrect.'));
+
+                    return $this->render('user/change_password.html.twig', [
+                        'form' => $form,
+                        'user' => $user,
+                        'require_old_password' => $requireOldPassword,
+                    ]);
+                }
+            }
+
+            // Check that both passwords match
+            if ($newPassword !== $confirmPassword) {
+                $form->get('confirmPassword')->addError(new \Symfony\Component\Form\FormError('The passwords do not match.'));
+
+                return $this->render('user/change_password.html.twig', [
+                    'form' => $form,
+                    'user' => $user,
+                    'require_old_password' => $requireOldPassword,
+                ]);
+            }
+
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
+            $user->setPassword($hashedPassword);
+            $user->setUpdatedAt(new DateTimeImmutable());
+            $this->entityManager->flush();
+
+            $this->logger->info('User password changed', ['id' => $user->getId()]);
+            $this->addFlash('success', 'Password changed successfully!');
+
+            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+        }
+
+        return $this->render('user/change_password.html.twig', [
+            'form' => $form,
+            'user' => $user,
+            'require_old_password' => $requireOldPassword,
+        ]);
     }
 }

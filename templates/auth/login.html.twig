@@ -1,13 +1,13 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Connexion - {{ parent() }}{% endblock %}
+{% block title %}Login - {{ parent() }}{% endblock %}
 
 {% block body %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-body">
-                <h2 class="card-title text-center mb-4">🔐 Connexion</h2>
+                <h2 class="card-title text-center mb-4">🔐 Login</h2>
 
                 {% if error %}
                     <div class="alert alert-danger">
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe</label>
+                        <label for="password" class="form-label">Password</label>
                         <input
                             type="password"
                             id="password"
@@ -43,15 +43,15 @@
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                     <button type="submit" class="btn btn-primary w-100">
-                        Se connecter
+                        Login
                     </button>
                 </form>
 
                 <hr>
 
                 <p class="text-center">
-                    Pas encore inscrit ?
-                    <a href="{{ path('app_auth_register') }}">Créer un compte</a>
+                    Not registered yet?
+                    <a href="{{ path('app_auth_register') }}">Create an account</a>
                 </p>
             </div>
         </div>

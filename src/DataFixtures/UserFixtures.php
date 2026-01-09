@@ -59,7 +59,7 @@ final class UserFixtures extends Fixture
             ],
         ];
 
-        // Créer les utilisateurs
+        // Create users
         foreach ($testUsers as $userData) {
             $user = new User();
             $user->setEmail($userData['email']);
@@ -68,7 +68,7 @@ final class UserFixtures extends Fixture
             $user->setRoles($userData['roles']);
             $user->setIsActive($userData['isActive']);
 
-            // Hasher le mot de passe
+            // Hash the password
             $hashedPassword = $this->passwordHasher->hashPassword($user, $userData['password']);
             $user->setPassword($hashedPassword);
 

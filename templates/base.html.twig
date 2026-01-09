@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,24 +34,24 @@
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('app_user_index') }}">
-                                        👥 Utilisateurs
+                                        👥 Users
                                     </a>
                                 </li>
                             {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_logout') }}">
-                                    🚪 Déconnexion
+                                    🚪 Logout
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_login') }}">
-                                    🔐 Connexion
+                                    🔐 Login
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_register') }}">
-                                    ✍️ Inscription
+                                    ✍️ Register
                                 </a>
                             </li>
                         {% endif %}
@@ -81,7 +81,7 @@
 
         <!-- Footer -->
         <footer class="bg-dark text-white text-center py-4 mt-5">
-            <p>&copy; 2025 User Management System. Tous droits réservés.</p>
+            <p>&copy; 2025 Template Symfony + Twig. All rights reserved.</p>
         </footer>
     </body>
 </html>

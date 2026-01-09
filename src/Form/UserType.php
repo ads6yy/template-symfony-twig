@@ -16,52 +16,61 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * @extends AbstractType<User>
+ */
 final class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $isEdit = $options['data'] instanceof User && null !== $options['data']->id;
+        $isEdit = $options['data'] instanceof User && null !== $options['data']->getId();
         $isAdmin = $options['is_admin'] ?? false;
 
         $builder
             ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new NotBlank(),
-                    new Email(),
+                    new NotBlank(message: 'Please enter an email address.'),
+                    new Email(message: 'Please enter a valid email address.'),
                 ],
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('firstName', TextType::class, [
+                'label' => 'First Name',
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('lastName', TextType::class, [
+                'label' => 'Last Name',
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ]);
 
         if (!$isEdit) {
             $builder->add('password', PasswordType::class, [
+                'label' => 'Password',
                 'constraints' => [
-                    new NotBlank(),
+                    new NotBlank(message: 'Please enter a password.'),
                 ],
                 'attr' => ['class' => 'form-control'],
             ]);
         }
 
-        // Seulement les admins peuvent modifier les rôles et le statut
+        // Only admins can modify roles and status
         if ($isAdmin) {
             $builder
                 ->add('isActive', CheckboxType::class, [
+                    'label' => 'Active',
                     'required' => false,
                     'attr' => ['class' => 'form-check-input'],
                 ])
                 ->add('roles', ChoiceType::class, [
+                    'label' => 'Roles',
                     'multiple' => true,
                     'expanded' => true,
                     'choices' => [
-                        'Utilisateur' => 'ROLE_USER',
-                        'Administrateur' => 'ROLE_ADMIN',
+                        'User' => 'ROLE_USER',
+                        'Administrator' => 'ROLE_ADMIN',
                     ],
                     'attr' => ['class' => 'form-check-input'],
                 ]);

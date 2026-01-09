@@ -18,10 +18,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    public ?int $id = null {
-        get {
-            return $this->id;
-        }
+    private ?int $id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     #[ORM\Column(length: 180)]
@@ -49,14 +50,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isActive = true;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    public DateTimeImmutable $createdAt {
-        get {
-            return $this->createdAt;
-        }
-    }
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $updatedAt;
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 
     public function __construct()
     {

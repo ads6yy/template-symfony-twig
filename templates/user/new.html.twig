@@ -1,13 +1,13 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Créer un Utilisateur - {{ parent() }}{% endblock %}
+{% block title %}Create User - {{ parent() }}{% endblock %}
 
 {% block body %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow">
             <div class="card-header bg-success text-white">
-                <h2 class="mb-0">➕ Créer un Nouvel Utilisateur</h2>
+                <h2 class="mb-0">➕ Create New User</h2>
             </div>
             <div class="card-body">
                 {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
@@ -53,23 +53,26 @@
                     <div class="mb-3">
                         {{ form_label(form.roles) }}
                         <div>
-                            {{ form_widget(form.roles) }}
+                            {% for role_field in form.roles %}
+                                <div class="form-check">
+                                    {{ form_widget(role_field, {attr: {class: 'form-check-input'}}) }}
+                                    {{ form_label(role_field, null, {label_attr: {class: 'form-check-label'}}) }}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        {{ form_label(form.isActive, 'Utilisateur actif') }}
-                        <div>
-                            {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
-                        </div>
+                    <div class="form-check mb-3">
+                        {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
+                        {{ form_label(form.isActive, 'Active', {label_attr: {class: 'form-check-label'}}) }}
                     </div>
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-success">
-                            ✅ Créer l'utilisateur
+                            ✅ Create User
                         </button>
                         <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
-                            ← Annuler
+                            ← Cancel
                         </a>
                     </div>
                 {{ form_end(form) }}

@@ -67,12 +67,13 @@ final class AuthController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var array{email: string, firstName?: string, lastName?: string, password: string} $data */
             $data = $form->getData();
 
             // Check if email already exists
             $existingUser = $this->userRepository->findOneBy(['email' => $data['email']]);
             if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                $this->addFlash('error', 'This email is already in use.');
 
                 return $this->render('auth/register.html.twig', ['form' => $form]);
             }
@@ -90,7 +91,7 @@ final class AuthController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User registered', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+            $this->addFlash('success', 'Registration successful! You can now log in.');
 
             return $this->redirectToRoute('app_auth_login');
         }
