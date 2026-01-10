@@ -141,7 +141,7 @@ final class UserController extends AbstractController
             $this->logger->info('User deleted', ['email' => $user->getEmail()]);
             $this->addFlash('success', 'User deleted successfully!');
         } else {
-            $this->addFlash('error', 'Invalid CSRF token.');
+            $this->addFlash('error', 'flash.user.invalid_csrf');
         }
 
         return $this->redirectToRoute('app_user_index');

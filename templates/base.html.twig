@@ -71,16 +71,14 @@
 
         <!-- Messages Flash -->
         <div class="container mt-4">
-            {% if app.flashes %}
-                {% for type, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
+            {% for type in ['success', 'error', 'warning', 'info'] %}
+                {% for message in app.flashes(type) %}
+                    <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                        {{ message|trans }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 {% endfor %}
-            {% endif %}
+            {% endfor %}
         </div>
 
         <!-- Main Content -->
