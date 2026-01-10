@@ -34,27 +34,36 @@
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('app_user_index') }}">
-                                        👥 Users
+                                        👥 {{ 'nav.users'|trans }}
                                     </a>
                                 </li>
                             {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_logout') }}">
-                                    🚪 Logout
+                                    🚪 {{ 'nav.logout'|trans }}
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_login') }}">
-                                    🔐 Login
+                                    🔐 {{ 'nav.login'|trans }}
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_auth_register') }}">
-                                    ✍️ Register
+                                    ✍️ {{ 'nav.register'|trans }}
                                 </a>
                             </li>
                         {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                🌐 {{ app.request.locale|upper }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item {% if app.request.locale == 'en' %}active{% endif %}" href="{{ path(app.request.attributes.get('_route', 'app_template'), app.request.attributes.get('_route_params', {})|merge({'_locale': 'en'})) }}">English</a></li>
+                                <li><a class="dropdown-item {% if app.request.locale == 'fr' %}active{% endif %}" href="{{ path(app.request.attributes.get('_route', 'app_template'), app.request.attributes.get('_route_params', {})|merge({'_locale': 'fr'})) }}">Français</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -81,7 +90,7 @@
 
         <!-- Footer -->
         <footer class="bg-dark text-white text-center py-4 mt-5">
-            <p>&copy; Template Symfony + Twig. All rights reserved.</p>
+            <p>&copy; Template Symfony + Twig. {{ 'footer.copyright'|trans }}</p>
         </footer>
     </body>
 </html>

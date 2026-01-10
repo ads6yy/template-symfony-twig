@@ -158,7 +158,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User active status toggled', ['id' => $user->getId(), 'active' => $user->isActive()]);
-            $this->addFlash('success', 'User status updated.');
+            $this->addFlash('success', 'flash.user.status_updated');
         }
 
         return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
@@ -171,7 +171,7 @@ final class UserController extends AbstractController
 
         // A user can change their password, admins can change any user's password
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('You can only change your own password.');
+            throw $this->createAccessDeniedException('error.access_denied.change_password');
         }
 
         $this->logger->info('Change password form accessed', ['id' => $user->getId()]);
@@ -205,7 +205,7 @@ final class UserController extends AbstractController
 
             // Check that both passwords match
             if ($newPassword !== $confirmPassword) {
-                $form->get('confirmPassword')->addError(new \Symfony\Component\Form\FormError('The passwords do not match.'));
+                $form->get('confirmPassword')->addError(new \Symfony\Component\Form\FormError('validation.password.mismatch'));
 
                 return $this->render('user/change_password.html.twig', [
                     'form' => $form,
@@ -220,7 +220,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User password changed', ['id' => $user->getId()]);
-            $this->addFlash('success', 'Password changed successfully!');
+            $this->addFlash('success', 'flash.user.password_changed');
 
             return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }

@@ -28,29 +28,29 @@ final class UserType extends AbstractType
 
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Email',
+                'label' => 'form.email.label',
                 'constraints' => [
-                    new NotBlank(message: 'Please enter an email address.'),
-                    new Email(message: 'Please enter a valid email address.'),
+                    new NotBlank(message: 'validation.email.not_blank'),
+                    new Email(message: 'validation.email.invalid'),
                 ],
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('firstName', TextType::class, [
-                'label' => 'First Name',
+                'label' => 'form.first_name.label',
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('lastName', TextType::class, [
-                'label' => 'Last Name',
+                'label' => 'form.last_name.label',
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ]);
 
         if (!$isEdit) {
             $builder->add('password', PasswordType::class, [
-                'label' => 'Password',
+                'label' => 'form.password.label',
                 'constraints' => [
-                    new NotBlank(message: 'Please enter a password.'),
+                    new NotBlank(message: 'validation.password.not_blank'),
                 ],
                 'attr' => ['class' => 'form-control'],
             ]);
@@ -60,17 +60,17 @@ final class UserType extends AbstractType
         if ($isAdmin) {
             $builder
                 ->add('isActive', CheckboxType::class, [
-                    'label' => 'Active',
+                    'label' => 'form.active.label',
                     'required' => false,
                     'attr' => ['class' => 'form-check-input'],
                 ])
                 ->add('roles', ChoiceType::class, [
-                    'label' => 'Roles',
+                    'label' => 'form.roles.label',
                     'multiple' => true,
                     'expanded' => true,
                     'choices' => [
-                        'User' => 'ROLE_USER',
-                        'Administrator' => 'ROLE_ADMIN',
+                        'form.roles.user' => 'ROLE_USER',
+                        'form.roles.admin' => 'ROLE_ADMIN',
                     ],
                     'attr' => ['class' => 'form-check-input'],
                 ]);

@@ -22,29 +22,29 @@ final class RegistrationType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Email',
+                'label' => 'form.email.label',
                 'constraints' => [
-                    new NotBlank(message: 'Please enter an email address.'),
-                    new Email(message: 'Please enter a valid email address.'),
+                    new NotBlank(message: 'validation.email.not_blank'),
+                    new Email(message: 'validation.email.invalid'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'your@email.com'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'form.email.placeholder'],
             ])
             ->add('firstName', TextType::class, [
-                'label' => 'First Name',
+                'label' => 'form.first_name.label',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'First Name'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'form.first_name.placeholder'],
             ])
             ->add('lastName', TextType::class, [
-                'label' => 'Last Name',
+                'label' => 'form.last_name.label',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Last Name'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'form.last_name.placeholder'],
             ])
             ->add('password', PasswordType::class, [
-                'label' => 'Password',
+                'label' => 'form.password.label',
                 'constraints' => [
-                    new NotBlank(message: 'Please enter a password.'),
+                    new NotBlank(message: 'validation.password.not_blank'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Password'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'form.password.placeholder'],
             ]);
     }
 

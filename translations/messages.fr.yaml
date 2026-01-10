@@ -1,0 +1,131 @@
+# Authentification
+auth:
+  login:
+    title: Connexion
+    email: Adresse email
+    password: Mot de passe
+    submit: Se connecter
+    not_registered: Pas encore inscrit ?
+    create_account: Créer un compte
+  register:
+    title: Inscription
+    submit: Créer le compte
+    already_registered: Déjà inscrit ?
+    login_link: Se connecter
+
+# Navigation
+nav:
+  users: Utilisateurs
+  logout: Déconnexion
+  login: Connexion
+  register: Inscription
+
+# Gestion des utilisateurs
+user:
+  management:
+    title: Gestion des utilisateurs
+    add_user: Ajouter un utilisateur
+  list:
+    email: Email
+    full_name: Nom complet
+    roles: Rôles
+    status: Statut
+    created_at: Créé le
+    actions: Actions
+    no_users: Aucun utilisateur trouvé.
+    create_first: Créer le premier utilisateur
+  profile:
+    title: Profil utilisateur
+    first_name: Prénom
+    last_name: Nom
+    edit: Modifier le profil
+    change_password: Changer le mot de passe
+    delete: Supprimer
+    deactivate: Désactiver
+    activate: Activer
+    back: Retour à la liste
+    updated_at: Mis à jour le
+  status:
+    active: Actif
+    inactive: Inactif
+  actions:
+    view: Voir
+    edit: Modifier
+    delete: Supprimer
+    confirm_delete: Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+    confirm_delete_user: Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+  new:
+    title: Nouvel utilisateur
+    create: Créer l'utilisateur
+    cancel: Annuler
+  edit:
+    title: Modifier l'utilisateur
+    save: Enregistrer les modifications
+    cancel: Annuler
+  change_password:
+    title: Changer le mot de passe
+    submit: Changer le mot de passe
+    cancel: Annuler
+
+# Formulaires
+form:
+  email:
+    label: Email
+    placeholder: votre@email.com
+  first_name:
+    label: Prénom
+    placeholder: Jean
+  last_name:
+    label: Nom
+    placeholder: Dupont
+  password:
+    label: Mot de passe
+    placeholder: ••••••••
+  old_password:
+    label: Mot de passe actuel
+    placeholder: Votre mot de passe actuel
+  new_password:
+    label: Nouveau mot de passe
+    placeholder: Votre nouveau mot de passe
+    help: Minimum 8 caractères
+  confirm_password:
+    label: Confirmer le mot de passe
+    placeholder: Confirmez votre nouveau mot de passe
+  active:
+    label: Actif
+  roles:
+    label: Rôles
+    user: Utilisateur
+    admin: Administrateur
+
+# Template
+template:
+  hello: Bonjour
+  message: Ce message amical provient de
+  controller: Votre contrôleur à
+  template: Votre template à
+
+# Footer
+footer:
+  copyright: Tous droits réservés.
+
+# Messages flash
+flash:
+  user:
+    created: Utilisateur créé avec succès !
+    updated: Utilisateur mis à jour avec succès !
+    deleted: Utilisateur supprimé avec succès !
+    invalid_csrf: Jeton CSRF invalide.
+    status_updated: Statut de l'utilisateur mis à jour.
+    password_changed: Mot de passe modifié avec succès !
+  auth:
+    email_in_use: Cet email est déjà utilisé.
+    registration_success: Inscription réussie ! Vous pouvez maintenant vous connecter.
+
+# Messages d'erreur
+error:
+  access_denied:
+    view_profile: Vous ne pouvez voir que votre propre profil.
+    edit_profile: Vous ne pouvez modifier que votre propre profil.
+    change_password: Vous ne pouvez changer que votre propre mot de passe.
+

@@ -1,15 +1,15 @@
 {% extends "base.html.twig" %}
 
-{% block title %}User Management - {{ parent() }}{% endblock %}
+{% block title %}{{ 'user.management.title'|trans }} - {{ parent() }}{% endblock %}
 
 {% block body %}
 <div class="row mb-4">
     <div class="col">
-        <h1>👥 User Management</h1>
+        <h1>👥 {{ 'user.management.title'|trans }}</h1>
     </div>
     <div class="col-auto">
         <a href="{{ path('app_user_new') }}" class="btn btn-success">
-            ➕ Add User
+            ➕ {{ 'user.management.add_user'|trans }}
         </a>
     </div>
 </div>
@@ -19,12 +19,12 @@
         <table class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
-                    <th>Email</th>
-                    <th>Full Name</th>
-                    <th>Roles</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
+                    <th>{{ 'user.list.email'|trans }}</th>
+                    <th>{{ 'user.list.full_name'|trans }}</th>
+                    <th>{{ 'user.list.roles'|trans }}</th>
+                    <th>{{ 'user.list.status'|trans }}</th>
+                    <th>{{ 'user.list.created_at'|trans }}</th>
+                    <th>{{ 'user.list.actions'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,27 +43,27 @@
                         </td>
                         <td>
                             {% if user.isActive %}
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ 'user.status.active'|trans }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">Inactive</span>
+                                <span class="badge bg-secondary">{{ 'user.status.inactive'|trans }}</span>
                             {% endif %}
                         </td>
                         <td>
-                            {{ user.createdAt|date('m/d/Y H:i') }}
+                            {{ user.createdAt|date('d/m/Y H:i') }}
                         </td>
                         <td>
                             <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-sm btn-info">
-                                👁️ View
+                                👁️ {{ 'user.actions.view'|trans }}
                             </a>
                             <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-sm btn-warning">
-                                ✏️ Edit
+                                ✏️ {{ 'user.actions.edit'|trans }}
                             </a>
                             <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}"
                                   style="display:inline;"
-                                  onsubmit="return confirm('Are you sure?');">
+                                  onsubmit="return confirm('{{ 'user.actions.confirm_delete'|trans }}');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
                                 <button type="submit" class="btn btn-sm btn-danger">
-                                    🗑️ Delete
+                                    🗑️ {{ 'user.actions.delete'|trans }}
                                 </button>
                             </form>
                         </td>
@@ -74,9 +74,8 @@
     </div>
 {% else %}
     <div class="alert alert-info">
-        <strong>No users found.</strong>
-        <a href="{{ path('app_user_new') }}">Create the first user</a>
+        <strong>{{ 'user.list.no_users'|trans }}</strong>
+        <a href="{{ path('app_user_new') }}">{{ 'user.list.create_first'|trans }}</a>
     </div>
 {% endif %}
 {% endblock %}
-
