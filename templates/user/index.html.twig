@@ -49,7 +49,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {{ user.createdAt|date('d/m/Y H:i') }}
+                            {{ user.createdAt|localized_datetime }}
                         </td>
                         <td>
                             <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-sm btn-info">

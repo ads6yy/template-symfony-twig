@@ -60,8 +60,8 @@
                                 🌐 {{ app.request.locale|upper }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                                <li><a class="dropdown-item {% if app.request.locale == 'en' %}active{% endif %}" href="{{ path(app.request.attributes.get('_route', 'app_template'), app.request.attributes.get('_route_params', {})|merge({'_locale': 'en'})) }}">English</a></li>
-                                <li><a class="dropdown-item {% if app.request.locale == 'fr' %}active{% endif %}" href="{{ path(app.request.attributes.get('_route', 'app_template'), app.request.attributes.get('_route_params', {})|merge({'_locale': 'fr'})) }}">Français</a></li>
+                                <li><a class="dropdown-item {% if app.request.locale == 'en' %}active{% endif %}" href="{{ locale_switcher_url('en') }}">English</a></li>
+                                <li><a class="dropdown-item {% if app.request.locale == 'fr' %}active{% endif %}" href="{{ locale_switcher_url('fr') }}">Français</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -44,12 +44,12 @@
 
                     <dt class="col-sm-3">{{ 'user.list.created_at'|trans }}</dt>
                     <dd class="col-sm-9">
-                        {{ user.createdAt|date('d/m/Y H:i') }}
+                        {{ user.createdAt|localized_datetime }}
                     </dd>
 
                     <dt class="col-sm-3">{{ 'user.profile.updated_at'|trans }}</dt>
                     <dd class="col-sm-9">
-                        {{ user.updatedAt|date('d/m/Y H:i') }}
+                        {{ user.updatedAt|localized_datetime }}
                     </dd>
                 </dl>
             </div>

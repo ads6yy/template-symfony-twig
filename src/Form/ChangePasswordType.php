@@ -10,12 +10,18 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @extends AbstractType<array{oldPassword?: string, newPassword: string, confirmPassword: string}>
  */
 final class ChangePasswordType extends AbstractType
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $requireOldPassword = $options['require_old_password'] ?? true;
@@ -30,7 +36,7 @@ final class ChangePasswordType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'form.old_password.placeholder',
+                    'placeholder' => $this->translator->trans('form.old_password.placeholder'),
                 ],
                 'mapped' => false,
             ]);
@@ -45,13 +51,13 @@ final class ChangePasswordType extends AbstractType
                     ),
                     new Length(
                         min: 8,
-                        minMessage: 'validation.password.min_length',
-                        max: 4096
+                        max: 4096,
+                        minMessage: 'validation.password.min_length'
                     ),
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'form.new_password.placeholder',
+                    'placeholder' => $this->translator->trans('form.new_password.placeholder'),
                 ],
                 'mapped' => false,
                 'help' => 'form.new_password.help',
@@ -65,7 +71,7 @@ final class ChangePasswordType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'form.confirm_password.placeholder',
+                    'placeholder' => $this->translator->trans('form.confirm_password.placeholder'),
                 ],
                 'mapped' => false,
             ]);

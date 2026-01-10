@@ -74,7 +74,7 @@ final class UserFixtures extends Fixture
 
             $manager->persist($user);
 
-            // Ajouter une référence pour les tests
+            // Add a reference for tests
             if (isset($userData['reference'])) {
                 $this->addReference($userData['reference'], $user);
             }

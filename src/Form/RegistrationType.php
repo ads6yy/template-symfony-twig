@@ -12,12 +12,18 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @extends AbstractType<array{email: string, firstName?: string, lastName?: string, password: string}>
  */
 final class RegistrationType extends AbstractType
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -27,24 +33,36 @@ final class RegistrationType extends AbstractType
                     new NotBlank(message: 'validation.email.not_blank'),
                     new Email(message: 'validation.email.invalid'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.email.placeholder'],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => $this->translator->trans('form.email.placeholder'),
+                ],
             ])
             ->add('firstName', TextType::class, [
                 'label' => 'form.first_name.label',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.first_name.placeholder'],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => $this->translator->trans('form.first_name.placeholder'),
+                ],
             ])
             ->add('lastName', TextType::class, [
                 'label' => 'form.last_name.label',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.last_name.placeholder'],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => $this->translator->trans('form.last_name.placeholder'),
+                ],
             ])
             ->add('password', PasswordType::class, [
                 'label' => 'form.password.label',
                 'constraints' => [
                     new NotBlank(message: 'validation.password.not_blank'),
                 ],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.password.placeholder'],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => $this->translator->trans('form.password.placeholder'),
+                ],
             ]);
     }
 

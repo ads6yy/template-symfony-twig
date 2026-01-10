@@ -47,7 +47,7 @@ final class UserController extends AbstractController
         $currentUser = $this->getUser();
 
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Vous ne pouvez voir que votre profil.');
+            throw $this->createAccessDeniedException('You can only view your own profile.');
         }
 
         return $this->render('user/show.html.twig', [
@@ -103,7 +103,7 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Le champ password n'existe que lors de la création
+            // The password field only exists during creation
             if ($form->has('password')) {
                 $plainPassword = $form->get('password')->getData();
                 if ($plainPassword) {
