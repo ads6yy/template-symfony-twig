@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig;
 
+use DateTimeInterface;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -26,7 +27,7 @@ final class DateExtension extends AbstractExtension
     ];
 
     public function __construct(
-        private readonly LocaleAwareInterface $translator
+        private readonly LocaleAwareInterface $translator,
     ) {
     }
 
@@ -38,7 +39,7 @@ final class DateExtension extends AbstractExtension
         ];
     }
 
-    public function formatDate(?\DateTimeInterface $date): string
+    public function formatDate(?DateTimeInterface $date): string
     {
         if (null === $date) {
             return '—';
@@ -50,7 +51,7 @@ final class DateExtension extends AbstractExtension
         return $date->format($format);
     }
 
-    public function formatDateTime(?\DateTimeInterface $date, bool $includeSeconds = false): string
+    public function formatDateTime(?DateTimeInterface $date, bool $includeSeconds = false): string
     {
         if (null === $date) {
             return '—';
@@ -66,4 +67,3 @@ final class DateExtension extends AbstractExtension
         return $date->format($format);
     }
 }
-
