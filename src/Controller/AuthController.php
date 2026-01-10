@@ -73,7 +73,7 @@ final class AuthController extends AbstractController
             // Check if email already exists
             $existingUser = $this->userRepository->findOneBy(['email' => $data['email']]);
             if ($existingUser) {
-                $this->addFlash('error', 'This email is already in use.');
+                $this->addFlash('error', 'flash.auth.email_in_use');
 
                 return $this->render('auth/register.html.twig', ['form' => $form]);
             }
@@ -91,7 +91,7 @@ final class AuthController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User registered', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'Registration successful! You can now log in.');
+            $this->addFlash('success', 'flash.auth.registration_success');
 
             return $this->redirectToRoute('app_auth_login');
         }

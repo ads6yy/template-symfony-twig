@@ -1,0 +1,12 @@
+# Validation translations
+validation:
+  email:
+    not_blank: "Email cannot be blank."
+    invalid: "Please enter a valid email address."
+  password:
+    not_blank: "Password cannot be blank."
+    min_length: "Password must be at least {{ limit }} characters long."
+    confirm: "Please confirm your password."
+    old_incorrect: "The old password is incorrect."
+    mismatch: "The passwords do not match."
+

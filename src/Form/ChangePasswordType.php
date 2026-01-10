@@ -22,15 +22,15 @@ final class ChangePasswordType extends AbstractType
 
         if ($requireOldPassword) {
             $builder->add('oldPassword', PasswordType::class, [
-                'label' => 'Old Password',
+                'label' => 'form.old_password.label',
                 'constraints' => [
                     new NotBlank(
-                        message: 'Please enter your old password.'
+                        message: 'validation.password.not_blank'
                     ),
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Your current password',
+                    'placeholder' => 'form.old_password.placeholder',
                 ],
                 'mapped' => false,
             ]);
@@ -38,34 +38,34 @@ final class ChangePasswordType extends AbstractType
 
         $builder
             ->add('newPassword', PasswordType::class, [
-                'label' => 'New Password',
+                'label' => 'form.new_password.label',
                 'constraints' => [
                     new NotBlank(
-                        message: 'Please enter a password.'
+                        message: 'validation.password.not_blank'
                     ),
                     new Length(
                         min: 8,
-                        minMessage: 'The password must contain at least {{ limit }} characters.',
+                        minMessage: 'validation.password.min_length',
                         max: 4096
                     ),
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Minimum 8 characters',
+                    'placeholder' => 'form.new_password.placeholder',
                 ],
                 'mapped' => false,
-                'help' => 'The password must contain at least 8 characters and be strong enough.',
+                'help' => 'form.new_password.help',
             ])
             ->add('confirmPassword', PasswordType::class, [
-                'label' => 'Confirm Password',
+                'label' => 'form.confirm_password.label',
                 'constraints' => [
                     new NotBlank(
-                        message: 'Please confirm your password.'
+                        message: 'validation.password.confirm'
                     ),
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Retype your password',
+                    'placeholder' => 'form.confirm_password.placeholder',
                 ],
                 'mapped' => false,
             ]);

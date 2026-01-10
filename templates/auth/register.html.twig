@@ -1,13 +1,13 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Registration - {{ parent() }}{% endblock %}
+{% block title %}{{ 'auth.register.title'|trans }} - {{ parent() }}{% endblock %}
 
 {% block body %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-body">
-                <h2 class="card-title text-center mb-4">✍️ Registration</h2>
+                <h2 class="card-title text-center mb-4">✍️ {{ 'auth.register.title'|trans }}</h2>
 
                 {{ form_start(form) }}
                     <div class="mb-3">
@@ -50,19 +50,18 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        Register
+                        {{ 'auth.register.submit'|trans }}
                     </button>
                 {{ form_end(form) }}
 
                 <hr>
 
                 <p class="text-center">
-                    Already registered?
-                    <a href="{{ path('app_auth_login') }}">Login</a>
+                    {{ 'auth.register.already_registered'|trans }}
+                    <a href="{{ path('app_auth_login') }}">{{ 'auth.register.login_link'|trans }}</a>
                 </p>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
