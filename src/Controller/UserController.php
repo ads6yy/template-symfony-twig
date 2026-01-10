@@ -47,7 +47,7 @@ final class UserController extends AbstractController
         $currentUser = $this->getUser();
 
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('You can only view your own profile.');
+            throw $this->createAccessDeniedException('error.access_denied.edit_profile');
         }
 
         return $this->render('user/show.html.twig', [
@@ -103,7 +103,8 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // The password field only exists during creation
+            // In UserType the password field is normally added only when creating a new user.
+            // This check ensures we handle it safely if it is present during edit (e.g. edge cases or config changes).
             if ($form->has('password')) {
                 $plainPassword = $form->get('password')->getData();
                 if ($plainPassword) {
@@ -205,7 +206,15 @@ final class UserController extends AbstractController
 
             // Check that both passwords match
             if ($newPassword !== $confirmPassword) {
-                $form->get('confirmPassword')->addError(new \Symfony\Component\Form\FormError('validation.password.mismatch'));
+                $form->get('confirmPassword')->addError(
+                    new \Symfony\Component\Form\FormError(
+                        '',
+                        'validation.password.mismatch',
+                        [],
+                        null,
+                        'validators'
+                    )
+                );
 
                 return $this->render('user/change_password.html.twig', [
                     'form' => $form,
