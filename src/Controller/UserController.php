@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/users', name: 'app_user_')]
 final class UserController extends AbstractController
@@ -25,6 +26,7 @@ final class UserController extends AbstractController
         protected EntityManagerInterface $entityManager,
         protected UserPasswordHasherInterface $passwordHasher,
         protected LoggerInterface $logger,
+        protected TranslatorInterface $translator,
     ) {
     }
 
@@ -47,7 +49,7 @@ final class UserController extends AbstractController
         $currentUser = $this->getUser();
 
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Vous ne pouvez voir que votre profil.');
+            throw $this->createAccessDeniedException('error.access_denied.view_profile');
         }
 
         return $this->render('user/show.html.twig', [
@@ -76,7 +78,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User created', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'User created successfully!');
+            $this->addFlash('success', 'flash.user.created');
 
             return $this->redirectToRoute('app_user_index');
         }
@@ -103,7 +105,8 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Le champ password n'existe que lors de la création
+            // In UserType the password field is normally added only when creating a new user.
+            // This check ensures we handle it safely if it is present during edit (e.g. edge cases or config changes).
             if ($form->has('password')) {
                 $plainPassword = $form->get('password')->getData();
                 if ($plainPassword) {
@@ -116,7 +119,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User updated', ['id' => $user->getId()]);
-            $this->addFlash('success', 'User updated successfully!');
+            $this->addFlash('success', 'flash.user.updated');
 
             return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }
@@ -139,9 +142,9 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User deleted', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'User deleted successfully!');
+            $this->addFlash('success', 'flash.user.deleted');
         } else {
-            $this->addFlash('error', 'Invalid CSRF token.');
+            $this->addFlash('error', 'flash.user.invalid_csrf');
         }
 
         return $this->redirectToRoute('app_user_index');
@@ -158,7 +161,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User active status toggled', ['id' => $user->getId(), 'active' => $user->isActive()]);
-            $this->addFlash('success', 'User status updated.');
+            $this->addFlash('success', 'flash.user.status_updated');
         }
 
         return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
@@ -171,7 +174,7 @@ final class UserController extends AbstractController
 
         // A user can change their password, admins can change any user's password
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('You can only change your own password.');
+            throw $this->createAccessDeniedException('error.access_denied.change_password');
         }
 
         $this->logger->info('Change password form accessed', ['id' => $user->getId()]);
@@ -193,7 +196,11 @@ final class UserController extends AbstractController
             // Check old password if user is changing their own password
             if ($requireOldPassword && $oldPassword) {
                 if (!$this->passwordHasher->isPasswordValid($user, $oldPassword)) {
-                    $form->get('oldPassword')->addError(new \Symfony\Component\Form\FormError('The old password is incorrect.'));
+                    $form->get('oldPassword')->addError(
+                        new \Symfony\Component\Form\FormError(
+                            $this->translator->trans('validation.password.old_incorrect', [], 'validators')
+                        )
+                    );
 
                     return $this->render('user/change_password.html.twig', [
                         'form' => $form,
@@ -205,7 +212,11 @@ final class UserController extends AbstractController
 
             // Check that both passwords match
             if ($newPassword !== $confirmPassword) {
-                $form->get('confirmPassword')->addError(new \Symfony\Component\Form\FormError('The passwords do not match.'));
+                $form->get('confirmPassword')->addError(
+                    new \Symfony\Component\Form\FormError(
+                        $this->translator->trans('validation.password.mismatch', [], 'validators')
+                    )
+                );
 
                 return $this->render('user/change_password.html.twig', [
                     'form' => $form,
@@ -220,7 +231,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User password changed', ['id' => $user->getId()]);
-            $this->addFlash('success', 'Password changed successfully!');
+            $this->addFlash('success', 'flash.user.password_changed');
 
             return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }

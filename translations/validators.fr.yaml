@@ -1,0 +1,12 @@
+# Traductions de validation
+validation:
+  email:
+    not_blank: "L'email ne peut pas être vide."
+    invalid: "Veuillez saisir une adresse email valide."
+  password:
+    not_blank: "Le mot de passe ne peut pas être vide."
+    min_length: "Le mot de passe doit contenir au moins {{ limit }} caractères."
+    confirm: "Veuillez confirmer votre mot de passe."
+    old_incorrect: "L'ancien mot de passe est incorrect."
+    mismatch: "Les mots de passe ne correspondent pas."
+

@@ -1,0 +1,131 @@
+# Authentication
+auth:
+  login:
+    title: Login
+    email: Email
+    password: Password
+    submit: Sign In
+    not_registered: Not registered yet?
+    create_account: Create an account
+  register:
+    title: Register
+    submit: Create Account
+    already_registered: Already have an account?
+    login_link: Sign in
+
+# Navigation
+nav:
+  users: Users
+  logout: Logout
+  login: Login
+  register: Register
+
+# User Management
+user:
+  management:
+    title: User Management
+    add_user: Add User
+  list:
+    email: Email
+    full_name: Full Name
+    roles: Roles
+    status: Status
+    created_at: Created At
+    actions: Actions
+    no_users: No users found.
+    create_first: Create the first user
+  profile:
+    title: User Profile
+    first_name: First Name
+    last_name: Last Name
+    edit: Edit Profile
+    change_password: Change Password
+    delete: Delete
+    deactivate: Deactivate
+    activate: Activate
+    back: Back to List
+    updated_at: Updated At
+  status:
+    active: Active
+    inactive: Inactive
+  actions:
+    view: View
+    edit: Edit
+    delete: Delete
+    confirm_delete: Are you sure you want to delete this user?
+    confirm_delete_user: Are you sure you want to delete this user?
+  new:
+    title: New User
+    create: Create User
+    cancel: Cancel
+  edit:
+    title: Edit User
+    save: Save Changes
+    cancel: Cancel
+  change_password:
+    title: Change Password
+    submit: Change Password
+    cancel: Cancel
+
+# Forms
+form:
+  email:
+    label: Email
+    placeholder: your@email.com
+  first_name:
+    label: First Name
+    placeholder: John
+  last_name:
+    label: Last Name
+    placeholder: Doe
+  password:
+    label: Password
+    placeholder: ••••••••
+  old_password:
+    label: Current Password
+    placeholder: Your current password
+  new_password:
+    label: New Password
+    placeholder: Your new password
+    help: Minimum 8 characters
+  confirm_password:
+    label: Confirm Password
+    placeholder: Confirm your new password
+  active:
+    label: Active
+  roles:
+    label: Roles
+    user: User
+    admin: Administrator
+
+# Template
+template:
+  hello: Hello
+  message: This friendly message is coming from
+  controller: Your controller at
+  template: Your template at
+
+# Footer
+footer:
+  copyright: All rights reserved.
+
+# Flash Messages
+flash:
+  user:
+    created: User created successfully!
+    updated: User updated successfully!
+    deleted: User deleted successfully!
+    invalid_csrf: Invalid CSRF token.
+    status_updated: User status updated.
+    password_changed: Password successfully changed!
+  auth:
+    email_in_use: This email is already in use.
+    registration_success: Registration successful! You can now log in.
+
+# Error Messages
+error:
+  access_denied:
+    view_profile: You can only view your own profile.
+    edit_profile: You can only edit your own profile.
+    change_password: You can only change your own password.
+

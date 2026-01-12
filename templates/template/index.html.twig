@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TemplateController!{% endblock %}
+{% block title %}{{ 'template.hello'|trans }} TemplateController!{% endblock %}
 
 {% block body %}
 <style>
@@ -9,12 +9,12 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>{{ 'template.hello'|trans }} {{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
+    {{ 'template.message'|trans }}:
     <ul>
-        <li>Your controller at <code>/srv/src/Controller/TemplateController.php</code></li>
-        <li>Your template at <code>/srv/templates/template/index.html.twig</code></li>
+        <li>{{ 'template.controller'|trans }} <code>/srv/src/Controller/TemplateController.php</code></li>
+        <li>{{ 'template.template'|trans }} <code>/srv/templates/template/index.html.twig</code></li>
     </ul>
 </div>
 {% endblock %}
