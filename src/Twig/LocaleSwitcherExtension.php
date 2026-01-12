@@ -42,8 +42,8 @@ final class LocaleSwitcherExtension extends AbstractExtension
         // Get the current route
         $currentRoute = $request->attributes->get('_route');
 
-        // If no route, use the fallback
-        if (null === $currentRoute || '_' === $currentRoute[0]) {
+        // If no usable route, or a system route (starting with "_"), use the fallback
+        if (!is_string($currentRoute) || $currentRoute === '' || $currentRoute[0] === '_') {
             // Routes starting with _ are system routes (e.g. _wdt, _profiler)
             return $this->generateFallbackUrl($targetLocale);
         }

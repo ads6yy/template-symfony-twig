@@ -47,7 +47,7 @@ final class UserController extends AbstractController
         $currentUser = $this->getUser();
 
         if ($currentUser !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('error.access_denied.edit_profile');
+            throw $this->createAccessDeniedException('error.access_denied.view_profile');
         }
 
         return $this->render('user/show.html.twig', [
@@ -140,7 +140,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User deleted', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'User deleted successfully!');
+            $this->addFlash('success', 'flash.user.deleted');
         } else {
             $this->addFlash('error', 'flash.user.invalid_csrf');
         }
@@ -208,7 +208,7 @@ final class UserController extends AbstractController
             if ($newPassword !== $confirmPassword) {
                 $form->get('confirmPassword')->addError(
                     new \Symfony\Component\Form\FormError(
-                        '',
+                        'validation.password.mismatch',
                         'validation.password.mismatch',
                         [],
                         null,
