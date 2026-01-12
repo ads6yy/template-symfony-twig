@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/users', name: 'app_user_')]
 final class UserController extends AbstractController
@@ -25,6 +26,7 @@ final class UserController extends AbstractController
         protected EntityManagerInterface $entityManager,
         protected UserPasswordHasherInterface $passwordHasher,
         protected LoggerInterface $logger,
+        protected TranslatorInterface $translator,
     ) {
     }
 
@@ -76,7 +78,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User created', ['email' => $user->getEmail()]);
-            $this->addFlash('success', 'User created successfully!');
+            $this->addFlash('success', 'flash.user.created');
 
             return $this->redirectToRoute('app_user_index');
         }
@@ -117,7 +119,7 @@ final class UserController extends AbstractController
             $this->entityManager->flush();
 
             $this->logger->info('User updated', ['id' => $user->getId()]);
-            $this->addFlash('success', 'User updated successfully!');
+            $this->addFlash('success', 'flash.user.updated');
 
             return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }
@@ -194,7 +196,11 @@ final class UserController extends AbstractController
             // Check old password if user is changing their own password
             if ($requireOldPassword && $oldPassword) {
                 if (!$this->passwordHasher->isPasswordValid($user, $oldPassword)) {
-                    $form->get('oldPassword')->addError(new \Symfony\Component\Form\FormError('The old password is incorrect.'));
+                    $form->get('oldPassword')->addError(
+                        new \Symfony\Component\Form\FormError(
+                            $this->translator->trans('validation.password.old_incorrect', [], 'validators')
+                        )
+                    );
 
                     return $this->render('user/change_password.html.twig', [
                         'form' => $form,
@@ -208,11 +214,7 @@ final class UserController extends AbstractController
             if ($newPassword !== $confirmPassword) {
                 $form->get('confirmPassword')->addError(
                     new \Symfony\Component\Form\FormError(
-                        'validation.password.mismatch',
-                        'validation.password.mismatch',
-                        [],
-                        null,
-                        'validators'
+                        $this->translator->trans('validation.password.mismatch', [], 'validators')
                     )
                 );
 
