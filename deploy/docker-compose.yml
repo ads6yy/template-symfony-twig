@@ -26,6 +26,15 @@ services:
       - ./php/php.ini:/usr/local/etc/php/conf.d/000-php.ini
     ports:
         - '8400:80'
+    depends_on:
+      - mailpit
+
+  mailpit:
+    container_name: symfony-mailpit
+    image: axllent/mailpit:latest
+    ports:
+      - "8401:8025"  # Web interface
+      - "1025:1025"  # SMTP server
 
 volumes:
   symfony-data: {}

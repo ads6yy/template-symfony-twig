@@ -8,14 +8,19 @@ use App\Entity\User;
 use App\Form\RegistrationType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use LogicException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/auth', name: 'app_auth_')]
 final class AuthController extends AbstractController
@@ -25,6 +30,8 @@ final class AuthController extends AbstractController
         protected EntityManagerInterface $entityManager,
         protected UserPasswordHasherInterface $passwordHasher,
         protected LoggerInterface $logger,
+        protected TranslatorInterface $translator,
+        protected MailerInterface $mailer,
     ) {
     }
 
@@ -89,6 +96,27 @@ final class AuthController extends AbstractController
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
+
+            // Send welcome email
+            $locale = $request->getLocale();
+            $email = new Email()
+                ->from('noreply@example.com')
+                ->to((string) $user->getEmail())
+                ->subject($this->translator->trans('email.user_registered.subject', [], 'messages', $locale))
+                ->html($this->renderView('emails/user_registered.html.twig', [
+                    'user' => $user,
+                    'locale' => $locale,
+                ]));
+
+            try {
+                $this->mailer->send($email);
+                $this->logger->info('Registration welcome email sent', ['email' => $user->getEmail()]);
+            } catch (Exception|TransportExceptionInterface $e) {
+                $this->logger->error('Failed to send registration welcome email', [
+                    'email' => $user->getEmail(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             $this->logger->info('User registered', ['email' => $user->getEmail()]);
             $this->addFlash('success', 'flash.auth.registration_success');

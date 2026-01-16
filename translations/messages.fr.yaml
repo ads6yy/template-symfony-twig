@@ -129,3 +129,19 @@ error:
     edit_profile: Vous ne pouvez modifier que votre propre profil.
     change_password: Vous ne pouvez changer que votre propre mot de passe.
 
+# Messages email
+email:
+  user_created:
+    subject: Bienvenue sur notre plateforme !
+    title: Bienvenue !
+    greeting: Bonjour %name%,
+    message: Votre compte a été créé avec succès par un administrateur. Vous pouvez maintenant vous connecter à la plateforme avec votre adresse email.
+    footer: Si vous avez des questions, veuillez contacter votre administrateur.
+  user_registered:
+    subject: Bienvenue ! Votre inscription est terminée
+    title: Inscription réussie !
+    greeting: Bonjour %name%,
+    message: Merci de vous être inscrit sur notre plateforme ! Votre compte a été créé avec succès et est maintenant actif.
+    next_steps: Vous pouvez maintenant vous connecter avec votre adresse email et commencer à utiliser toutes les fonctionnalités de notre plateforme.
+    footer: Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.
+

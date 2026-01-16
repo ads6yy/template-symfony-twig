@@ -129,3 +129,19 @@ error:
     edit_profile: You can only edit your own profile.
     change_password: You can only change your own password.
 
+# Email Messages
+email:
+  user_created:
+    subject: Welcome to our platform!
+    title: Welcome!
+    greeting: Hello %name%,
+    message: Your account has been successfully created by an administrator. You can now log in to the platform with your email address.
+    footer: If you have any questions, please contact your administrator.
+  user_registered:
+    subject: Welcome! Your registration is complete
+    title: Registration Successful!
+    greeting: Hello %name%,
+    message: Thank you for registering on our platform! Your account has been successfully created and is now active.
+    next_steps: You can now log in with your email address and start using all the features of our platform.
+    footer: If you have any questions or need assistance, please don't hesitate to contact us.
+
