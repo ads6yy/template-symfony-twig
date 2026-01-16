@@ -10,10 +10,14 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -27,6 +31,7 @@ final class UserController extends AbstractController
         protected UserPasswordHasherInterface $passwordHasher,
         protected LoggerInterface $logger,
         protected TranslatorInterface $translator,
+        protected MailerInterface $mailer,
     ) {
     }
 
@@ -43,7 +48,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(User $user): Response
     {
         $currentUser = $this->getUser();
@@ -77,6 +82,27 @@ final class UserController extends AbstractController
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
+            // Send welcome email
+            $locale = $request->getLocale();
+            $email = new Email()
+                ->from('noreply@example.com')
+                ->to((string) $user->getEmail())
+                ->subject($this->translator->trans('email.user_created.subject', [], 'messages', $locale))
+                ->html($this->renderView('emails/user_created.html.twig', [
+                    'user' => $user,
+                    'locale' => $locale,
+                ]));
+
+            try {
+                $this->mailer->send($email);
+                $this->logger->info('Welcome email sent', ['email' => $user->getEmail()]);
+            } catch (Exception|TransportExceptionInterface $e) {
+                $this->logger->error('Failed to send welcome email', [
+                    'email' => $user->getEmail(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
             $this->logger->info('User created', ['email' => $user->getEmail()]);
             $this->addFlash('success', 'flash.user.created');
 
@@ -88,7 +114,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/edit', name: 'edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user): Response
     {
         $currentUser = $this->getUser();
@@ -130,7 +156,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, User $user): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -150,7 +176,7 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index');
     }
 
-    #[Route('/{id}/toggle-active', name: 'toggle_active', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/toggle-active', name: 'toggle_active', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function toggleActive(Request $request, User $user): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -167,7 +193,7 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
     }
 
-    #[Route('/{id}/change-password', name: 'change_password', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/change-password', name: 'change_password', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function changePassword(Request $request, User $user): Response
     {
         $currentUser = $this->getUser();
