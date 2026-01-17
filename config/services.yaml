@@ -19,10 +19,6 @@ services:
     App\:
         resource: '../src/'
 
-    # API Token Authenticator
-    App\Api\Security\ApiTokenAuthenticator:
-        arguments:
-            $secret: '%kernel.secret%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

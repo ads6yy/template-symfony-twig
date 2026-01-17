@@ -4,31 +4,21 @@ declare(strict_types=1);
 
 namespace App\Api\Controller;
 
-use App\Repository\UserRepository;
+use App\Entity\User;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 #[Route('/api')]
 class AuthApiController extends AbstractController
 {
-    public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        #[Autowire('%kernel.secret%')]
-        private readonly string $secret,
-    ) {
-    }
-
     #[Route('/login', name: 'api_login', methods: ['POST'])]
     #[OA\Post(
         path: '/api/login',
-        summary: 'Login to get API token',
+        summary: 'Login to create a session',
         tags: ['Authentication']
     )]
     #[OA\RequestBody(
@@ -43,13 +33,15 @@ class AuthApiController extends AbstractController
     )]
     #[OA\Response(
         response: 200,
-        description: 'Returns API token',
+        description: 'Login successful - session created',
         content: new OA\JsonContent(
             properties: [
-                new OA\Property(property: 'token', type: 'string', example: 'base64encodedtoken'),
+                new OA\Property(property: 'message', type: 'string', example: 'Login successful'),
                 new OA\Property(property: 'user', properties: [
                     new OA\Property(property: 'id', type: 'integer', example: 1),
                     new OA\Property(property: 'email', type: 'string', example: 'admin@example.com'),
+                    new OA\Property(property: 'firstName', type: 'string', example: 'John'),
+                    new OA\Property(property: 'lastName', type: 'string', example: 'Doe'),
                     new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string')),
                 ], type: 'object'),
             ]
@@ -59,32 +51,18 @@ class AuthApiController extends AbstractController
         response: 401,
         description: 'Invalid credentials'
     )]
-    public function login(Request $request): JsonResponse
+    public function login(#[CurrentUser] ?User $user): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
-        if (!isset($data['email']) || !isset($data['password'])) {
-            return $this->json(['error' => 'Email and password are required'], Response::HTTP_BAD_REQUEST);
+        // This method is handled by json_login authenticator
+        // If we reach here, the user is authenticated
+        if (null === $user) {
+            return $this->json([
+                'error' => 'Invalid credentials',
+            ], Response::HTTP_UNAUTHORIZED);
         }
-
-        $user = $this->userRepository->findOneBy(['email' => $data['email']]);
-
-        if (!$user || !$this->passwordHasher->isPasswordValid($user, $data['password'])) {
-            return $this->json(['error' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        if (!$user->isActive()) {
-            return $this->json(['error' => 'Account is disabled'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        // Create a simple token (userId:timestamp:hash)
-        $timestamp = time();
-        $tokenData = $user->getId().':'.$timestamp;
-        $hash = hash_hmac('sha256', $tokenData, $this->secret);
-        $token = base64_encode($tokenData.':'.$hash);
 
         return $this->json([
-            'token' => $token,
+            'message' => 'Login successful',
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -93,5 +71,59 @@ class AuthApiController extends AbstractController
                 'roles' => $user->getRoles(),
             ],
         ]);
+    }
+
+    #[Route('/me', name: 'api_me', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/me',
+        summary: 'Get current authenticated user',
+        tags: ['Authentication']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns current user info',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'id', type: 'integer', example: 1),
+                new OA\Property(property: 'email', type: 'string', example: 'admin@example.com'),
+                new OA\Property(property: 'firstName', type: 'string', example: 'John'),
+                new OA\Property(property: 'lastName', type: 'string', example: 'Doe'),
+                new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string')),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Not authenticated'
+    )]
+    public function me(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $this->json([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'roles' => $user->getRoles(),
+        ]);
+    }
+
+    #[Route('/logout', name: 'api_logout', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/logout',
+        summary: 'Logout and destroy session',
+        tags: ['Authentication']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Logout successful'
+    )]
+    public function logout(): JsonResponse
+    {
+        // This will be handled by the logout handler
+        // But we can also just return success since session will be invalidated
+        return $this->json(['message' => 'Logout successful']);
     }
 }

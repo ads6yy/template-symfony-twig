@@ -16,13 +16,21 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        api_doc:
+            # Swagger UI and JSON spec - no authentication required
+            pattern: ^/api/doc(.json)?$
+            security: false
         api:
             pattern: ^/api
-            stateless: true
+            stateless: false
             provider: app_user_provider
-            custom_authenticators:
-                - App\Api\Security\ApiTokenAuthenticator
-            entry_point: App\Api\Security\ApiTokenAuthenticator
+            json_login:
+                check_path: api_login
+                username_path: email
+                password_path: password
+                success_handler: App\Api\Security\JsonAuthenticationSuccessHandler
+                failure_handler: App\Api\Security\JsonAuthenticationFailureHandler
+            entry_point: App\Api\Security\ApiAuthenticationEntryPoint
         main:
             lazy: true
             provider: app_user_provider
@@ -45,13 +53,13 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
-        - { path: ^/auth/login, roles: PUBLIC_ACCESS }
-        - { path: ^/auth/register, roles: PUBLIC_ACCESS }
-        - { path: ^/users$, roles: ROLE_ADMIN }
-        - { path: ^/users/new, roles: ROLE_ADMIN }
-        - { path: ^/users/.+/delete, roles: ROLE_ADMIN }
-        - { path: ^/users/.+/toggle-active, roles: ROLE_ADMIN }
-        - { path: ^/users, roles: ROLE_USER }
+        - { path: ^/(en|fr)/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/(en|fr)/auth/register, roles: PUBLIC_ACCESS }
+        - { path: ^/(en|fr)/users$, roles: ROLE_ADMIN }
+        - { path: ^/(en|fr)/users/new, roles: ROLE_ADMIN }
+        - { path: ^/(en|fr)/users/.+/delete, roles: ROLE_ADMIN }
+        - { path: ^/(en|fr)/users/.+/toggle-active, roles: ROLE_ADMIN }
+        - { path: ^/(en|fr)/users, roles: ROLE_USER }
         - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:

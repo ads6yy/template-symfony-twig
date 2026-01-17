@@ -22,7 +22,6 @@ class UserApiController extends AbstractController
     #[OA\Get(
         path: '/api/users',
         summary: 'Get list of all users',
-        security: [['Bearer' => []]],
         tags: ['User API']
     )]
     #[OA\Response(
