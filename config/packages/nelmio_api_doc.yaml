@@ -1,0 +1,25 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Template Symfony + Twig API
+            description: |
+                REST API endpoints for Symfony + Twig template.
+                
+                ## Authentication
+                1. Use the `/api/login` endpoint with your email and password
+                2. Copy the token from the response
+                3. Click the "Authorize" button and enter: `Bearer <your-token>`
+            version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: Token
+                    description: 'Enter your API token (get it from /api/login)'
+        security:
+            - Bearer: []
+    areas:
+        path_patterns:
+            - ^/api(?!/doc) # Only show API routes, exclude /api/doc itself
+        disable_default_routes: true

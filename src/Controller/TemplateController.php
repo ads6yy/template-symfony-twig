@@ -16,7 +16,7 @@ final class TemplateController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_template')]
+    #[Route('/', name: 'app_template', methods: ['GET'])]
     public function index(): Response
     {
         $this->logger->info('app_template - start');
