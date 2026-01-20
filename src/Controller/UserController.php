@@ -7,17 +7,16 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
+use App\Message\SendEmailMessage;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -32,6 +31,7 @@ final class UserController extends AbstractController
         protected LoggerInterface $logger,
         protected TranslatorInterface $translator,
         protected MailerInterface $mailer,
+        protected MessageBusInterface $messageBus,
     ) {
     }
 
@@ -82,26 +82,22 @@ final class UserController extends AbstractController
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            // Send welcome email
+            // Send welcome email asynchronously
             $locale = $request->getLocale();
-            $email = new Email()
-                ->from('noreply@example.com')
-                ->to((string) $user->getEmail())
-                ->subject($this->translator->trans('email.user_created.subject', [], 'messages', $locale))
-                ->html($this->renderView('emails/user_created.html.twig', [
-                    'user' => $user,
-                    'locale' => $locale,
-                ]));
+            $htmlContent = $this->renderView('emails/user_created.html.twig', [
+                'user' => $user,
+                'locale' => $locale,
+            ]);
 
-            try {
-                $this->mailer->send($email);
-                $this->logger->info('Welcome email sent', ['email' => $user->getEmail()]);
-            } catch (Exception|TransportExceptionInterface $e) {
-                $this->logger->error('Failed to send welcome email', [
-                    'email' => $user->getEmail(),
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            $emailMessage = new SendEmailMessage(
+                from: 'noreply@example.com',
+                to: (string) $user->getEmail(),
+                subject: $this->translator->trans('email.user_created.subject', [], 'messages', $locale),
+                htmlContent: $htmlContent
+            );
+
+            $this->messageBus->dispatch($emailMessage);
+            $this->logger->info('Welcome email queued for sending', ['email' => $user->getEmail()]);
 
             $this->logger->info('User created', ['email' => $user->getEmail()]);
             $this->addFlash('success', 'flash.user.created');
