@@ -24,6 +24,7 @@ services:
       - ../:/srv
       - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./php/php.ini:/usr/local/etc/php/conf.d/000-php.ini
+      - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
     ports:
         - '8400:80'
     depends_on:
