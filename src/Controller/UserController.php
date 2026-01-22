@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Constants\User\AccountStatus;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
@@ -11,6 +12,7 @@ use App\Message\SendEmailMessage;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +21,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/users', name: 'app_user_')]
@@ -173,17 +176,32 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/toggle-active', name: 'toggle_active', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function toggleActive(Request $request, User $user): Response
+    public function toggleActive(Request $request, User $user, WorkflowInterface $userAccountStatusStateMachine): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
             && $this->isCsrfTokenValid('toggle'.$user->getId(), $request->request->get('_token'))) {
-            $user->setIsActive(!$user->isActive());
-            $this->entityManager->flush();
+            try {
+                $currentStatus = $user->getAccountStatus();
 
-            $this->logger->info('User active status toggled', ['id' => $user->getId(), 'active' => $user->isActive()]);
-            $this->addFlash('success', 'flash.user.status_updated');
+                if ($currentStatus === AccountStatus::ACTIVE && $userAccountStatusStateMachine->can($user, 'suspend')) {
+                    $userAccountStatusStateMachine->apply($user, 'suspend');
+                    $this->logger->info('User suspended via workflow', ['id' => $user->getId()]);
+                    $this->addFlash('success', 'flash.user.status_updated');
+                } elseif ($currentStatus === AccountStatus::SUSPENDED && $userAccountStatusStateMachine->can($user, 'unsuspend')) {
+                    $userAccountStatusStateMachine->apply($user, 'unsuspend');
+                    $this->logger->info('User unsuspended via workflow', ['id' => $user->getId()]);
+                    $this->addFlash('success', 'flash.user.status_updated');
+                } else {
+                    $this->addFlash('warning', 'flash.user.transition_not_allowed');
+                }
+
+                $this->entityManager->flush();
+            } catch (Exception $e) {
+                $this->logger->error('Workflow transition failed', ['error' => $e->getMessage(), 'id' => $user->getId()]);
+                $this->addFlash('error', 'flash.user.status_update_failed');
+            }
         }
 
         return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);

@@ -1,2 +1,27 @@
+# config/packages/workflow.yaml
 framework:
-    workflows: null
+    workflows:
+        user_account_status:
+            type: 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'accountStatus'
+            supports:
+                - App\Entity\User
+            initial_marking: 'active'
+            places:
+                - 'active'
+                - 'suspended'
+                - 'banned'
+            transitions:
+                suspend:
+                    from: 'active'
+                    to: 'suspended'
+                unsuspend:
+                    from: ['banned', 'suspended']
+                    to: 'active'
+                ban:
+                    from: ['active', 'suspended']
+                    to: 'banned'

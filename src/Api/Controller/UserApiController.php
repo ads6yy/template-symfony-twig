@@ -36,7 +36,7 @@ class UserApiController extends AbstractController
                     new OA\Property(property: 'firstName', type: 'string', example: 'John'),
                     new OA\Property(property: 'lastName', type: 'string', example: 'Doe'),
                     new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string'), example: ['ROLE_USER']),
-                    new OA\Property(property: 'isActive', type: 'boolean', example: true),
+                    new OA\Property(property: 'accountStatus', type: 'string', enum: ['active', 'suspended', 'banned'], example: 'active'),
                     new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2024-01-01T12:00:00+00:00'),
                 ]
             )
@@ -59,7 +59,7 @@ class UserApiController extends AbstractController
                 'firstName' => $user->getFirstName(),
                 'lastName' => $user->getLastName(),
                 'roles' => $user->getRoles(),
-                'isActive' => $user->isActive(),
+                'accountStatus' => $user->getAccountStatus()->value,
                 'createdAt' => $user->getCreatedAt()->format('c'),
                 'updatedAt' => $user->getUpdatedAt()->format('c'),
             ];

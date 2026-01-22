@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Constants\User\AccountStatus;
 use App\Entity\User;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -29,10 +30,12 @@ final class UserType extends BaseUserType
         // Only admins can modify roles and status
         if ($isAdmin) {
             $builder
-                ->add('isActive', CheckboxType::class, [
-                    'label' => 'form.active.label',
-                    'required' => false,
-                    'attr' => ['class' => 'form-check-input'],
+                ->add('accountStatus', EnumType::class, [
+                    'class' => AccountStatus::class,
+                    'label' => 'form.account_status.label',
+                    'choice_label' => fn (AccountStatus $status) => 'user.status.'.$status->value,
+                    'attr' => ['class' => 'form-select'],
+                    'placeholder' => 'form.account_status.placeholder',
                 ])
                 ->add('roles', ChoiceType::class, [
                     'label' => 'form.roles.label',

@@ -47,7 +47,8 @@ user:
     updated_at: Mis à jour le
   status:
     active: Actif
-    inactive: Inactif
+    suspended: Suspendu
+    banned: Banni
   actions:
     view: Voir
     edit: Modifier
@@ -97,6 +98,9 @@ form:
     label: Rôles
     user: Utilisateur
     admin: Administrateur
+  account_status:
+    label: 'Statut du compte'
+    placeholder: 'Choisissez un statut'
 
 # Template
 template:
@@ -118,6 +122,7 @@ flash:
     invalid_csrf: Jeton CSRF invalide.
     status_updated: Statut de l'utilisateur mis à jour.
     password_changed: Mot de passe modifié avec succès !
+    transition_not_allowed: 'La transition d''état demandée n''est pas autorisée pour cet utilisateur.'
   auth:
     email_in_use: Cet email est déjà utilisé.
     registration_success: Inscription réussie ! Vous pouvez maintenant vous connecter.

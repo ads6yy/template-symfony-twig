@@ -47,7 +47,8 @@ user:
     updated_at: Updated At
   status:
     active: Active
-    inactive: Inactive
+    suspended: Suspended
+    banned: Banned
   actions:
     view: View
     edit: Edit
@@ -97,6 +98,9 @@ form:
     label: Roles
     user: User
     admin: Administrator
+  account_status:
+    label: 'Account Status'
+    placeholder: 'Choose a status'
 
 # Template
 template:
@@ -118,6 +122,7 @@ flash:
     invalid_csrf: Invalid CSRF token.
     status_updated: User status updated.
     password_changed: Password successfully changed!
+    transition_not_allowed: 'The requested status transition is not allowed for this user.'
   auth:
     email_in_use: This email is already in use.
     registration_success: Registration successful! You can now log in.
