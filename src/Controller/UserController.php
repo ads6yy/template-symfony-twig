@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Constants\User\AccountStatus;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
@@ -183,13 +182,11 @@ final class UserController extends AbstractController
         if ((is_string($request->request->get('_token')) || null === $request->request->get('_token'))
             && $this->isCsrfTokenValid('toggle'.$user->getId(), $request->request->get('_token'))) {
             try {
-                $currentStatus = $user->getAccountStatus();
-
-                if ($currentStatus === AccountStatus::ACTIVE && $userAccountStatusStateMachine->can($user, 'suspend')) {
+                if ($userAccountStatusStateMachine->can($user, 'suspend')) {
                     $userAccountStatusStateMachine->apply($user, 'suspend');
                     $this->logger->info('User suspended via workflow', ['id' => $user->getId()]);
                     $this->addFlash('success', 'flash.user.status_updated');
-                } elseif ($currentStatus === AccountStatus::SUSPENDED && $userAccountStatusStateMachine->can($user, 'unsuspend')) {
+                } elseif ($userAccountStatusStateMachine->can($user, 'unsuspend')) {
                     $userAccountStatusStateMachine->apply($user, 'unsuspend');
                     $this->logger->info('User unsuspended via workflow', ['id' => $user->getId()]);
                     $this->addFlash('success', 'flash.user.status_updated');

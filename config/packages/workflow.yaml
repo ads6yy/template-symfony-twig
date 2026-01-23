@@ -10,18 +10,22 @@ framework:
                 property: 'accountStatus'
             supports:
                 - App\Entity\User
-            initial_marking: 'active'
+            initial_marking: !php/const App\Constants\User\AccountStatus::ACTIVE
             places:
-                - 'active'
-                - 'suspended'
-                - 'banned'
+                - !php/const App\Constants\User\AccountStatus::ACTIVE
+                - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                - !php/const App\Constants\User\AccountStatus::BANNED
             transitions:
                 suspend:
-                    from: 'active'
-                    to: 'suspended'
+                    from: !php/const App\Constants\User\AccountStatus::ACTIVE
+                    to: !php/const App\Constants\User\AccountStatus::SUSPENDED
                 unsuspend:
-                    from: ['banned', 'suspended']
-                    to: 'active'
+                    from:
+                        - !php/const App\Constants\User\AccountStatus::BANNED
+                        - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                    to: !php/const App\Constants\User\AccountStatus::ACTIVE
                 ban:
-                    from: ['active', 'suspended']
-                    to: 'banned'
+                    from:
+                        - !php/const App\Constants\User\AccountStatus::ACTIVE
+                        - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                    to: !php/const App\Constants\User\AccountStatus::BANNED
