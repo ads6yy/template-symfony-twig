@@ -164,6 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return trim("$first $last");
     }
+
     public function getAccountStatus(): AccountStatus
     {
         return $this->accountStatus;
