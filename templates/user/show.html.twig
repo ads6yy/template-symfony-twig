@@ -35,10 +35,10 @@
 
                     <dt class="col-sm-3">{{ 'user.list.status'|trans }}</dt>
                     <dd class="col-sm-9">
-                        {% if user.isActive %}
+                        {% if user.accountStatus.isActive() %}
                             <span class="badge bg-success">{{ 'user.status.active'|trans }}</span>
                         {% else %}
-                            <span class="badge bg-secondary">{{ 'user.status.inactive'|trans }}</span>
+                            <span class="badge bg-secondary">{{ ('user.status.' ~ user.accountStatus.value)|trans }}</span>
                         {% endif %}
                     </dd>
 
@@ -78,8 +78,8 @@
                 <form method="post" action="{{ path('app_user_toggle_active', {id: user.id}) }}"
                       style="display:inline;">
                     <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
-                    <button type="submit" class="btn {{ user.isActive ? 'btn-secondary' : 'btn-success' }}">
-                        {{ user.isActive ? '❌ ' ~ 'user.profile.deactivate'|trans : '✅ ' ~ 'user.profile.activate'|trans }}
+                    <button type="submit" class="btn {{ user.accountStatus.isActive() ? 'btn-secondary' : 'btn-success' }}">
+                        {{ user.accountStatus.isActive() ? '❌ ' ~ 'user.profile.deactivate'|trans : '✅ ' ~ 'user.profile.activate'|trans }}
                     </button>
                 </form>
             {% endif %}

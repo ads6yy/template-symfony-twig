@@ -62,9 +62,9 @@
                         </div>
                     </div>
 
-                    <div class="form-check mb-3">
-                        {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
-                        {{ form_label(form.isActive, 'form.active.label'|trans, {label_attr: {class: 'form-check-label'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(form.accountStatus, 'form.account_status.label'|trans, {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.accountStatus, {attr: {class: 'form-select'}}) }}
                     </div>
 
                     <div class="d-flex gap-2">

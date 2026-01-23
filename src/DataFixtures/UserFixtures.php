@@ -27,35 +27,31 @@ final class UserFixtures extends Fixture
                 'email' => 'admin@example.com',
                 'firstName' => 'Admin',
                 'lastName' => 'System',
-                'password' => 'Admin123!@#',
+                'password' => 'Test123!',
                 'roles' => ['ROLE_ADMIN'],
-                'isActive' => true,
                 'reference' => self::ADMIN_USER_REFERENCE,
             ],
             [
                 'email' => 'user@example.com',
                 'firstName' => 'John',
                 'lastName' => 'Doe',
-                'password' => 'User123!@#',
+                'password' => 'Test123!',
                 'roles' => ['ROLE_USER'],
-                'isActive' => true,
                 'reference' => self::USER_USER_REFERENCE,
             ],
             [
                 'email' => 'jane.smith@example.com',
                 'firstName' => 'Jane',
                 'lastName' => 'Smith',
-                'password' => 'Jane123!@#',
+                'password' => 'Test123!',
                 'roles' => ['ROLE_USER'],
-                'isActive' => true,
             ],
             [
                 'email' => 'moderator@example.com',
                 'firstName' => 'Mod',
                 'lastName' => 'Erator',
-                'password' => 'Mod123!@#',
+                'password' => 'Test123!',
                 'roles' => ['ROLE_ADMIN'],
-                'isActive' => false,
             ],
         ];
 
@@ -66,7 +62,6 @@ final class UserFixtures extends Fixture
             $user->setFirstName($userData['firstName']);
             $user->setLastName($userData['lastName']);
             $user->setRoles($userData['roles']);
-            $user->setIsActive($userData['isActive']);
 
             // Hash the password
             $hashedPassword = $this->passwordHasher->hashPassword($user, $userData['password']);

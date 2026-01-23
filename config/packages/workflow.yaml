@@ -1,0 +1,31 @@
+# config/packages/workflow.yaml
+framework:
+    workflows:
+        user_account_status:
+            type: 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'accountStatus'
+            supports:
+                - App\Entity\User
+            initial_marking: !php/const App\Constants\User\AccountStatus::ACTIVE
+            places:
+                - !php/const App\Constants\User\AccountStatus::ACTIVE
+                - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                - !php/const App\Constants\User\AccountStatus::BANNED
+            transitions:
+                suspend:
+                    from: !php/const App\Constants\User\AccountStatus::ACTIVE
+                    to: !php/const App\Constants\User\AccountStatus::SUSPENDED
+                unsuspend:
+                    from:
+                        - !php/const App\Constants\User\AccountStatus::BANNED
+                        - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                    to: !php/const App\Constants\User\AccountStatus::ACTIVE
+                ban:
+                    from:
+                        - !php/const App\Constants\User\AccountStatus::ACTIVE
+                        - !php/const App\Constants\User\AccountStatus::SUSPENDED
+                    to: !php/const App\Constants\User\AccountStatus::BANNED

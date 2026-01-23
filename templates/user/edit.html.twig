@@ -39,26 +39,26 @@
                     </div>
 
 
-                    {% if form.roles is defined %}
-                        <div class="mb-3">
-                            {{ form_label(form.roles) }}
-                            <div>
-                                {% for role_field in form.roles %}
-                                    <div class="form-check">
-                                        {{ form_widget(role_field, {attr: {class: 'form-check-input'}}) }}
-                                        {{ form_label(role_field, null, {label_attr: {class: 'form-check-label'}}) }}
-                                    </div>
-                                {% endfor %}
-                            </div>
+                {% if form.roles is defined %}
+                    <div class="mb-3">
+                        {{ form_label(form.roles) }}
+                        <div>
+                            {% for role_field in form.roles %}
+                                <div class="form-check">
+                                    {{ form_widget(role_field, {attr: {class: 'form-check-input'}}) }}
+                                    {{ form_label(role_field, null, {label_attr: {class: 'form-check-label'}}) }}
+                                </div>
+                            {% endfor %}
                         </div>
+                    </div>
 
-                        <div class="form-check mb-3">
-                            {{ form_widget(form.isActive, {attr: {class: 'form-check-input'}}) }}
-                            {{ form_label(form.isActive, 'form.active.label'|trans, {label_attr: {class: 'form-check-label'}}) }}
-                        </div>
-                    {% endif %}
+                    <div class="mb-3">
+                        {{ form_label(form.accountStatus, 'form.account_status.label'|trans, {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.accountStatus, {attr: {class: 'form-select'}}) }}
+                    </div>
+                {% endif %}
 
-                    <div class="d-flex gap-2">
+                <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             💾 {{ 'user.edit.save'|trans }}
                         </button>

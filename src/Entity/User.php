@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Constants\User\AccountStatus;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -46,8 +47,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
 
-    #[ORM\Column]
-    private bool $isActive = true;
+    #[ORM\Column(type: 'string', enumType: AccountStatus::class)]
+    private AccountStatus $accountStatus = AccountStatus::ACTIVE;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
@@ -64,7 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
-        $this->isActive = true;
+        $this->accountStatus = AccountStatus::ACTIVE;
     }
 
     public function getEmail(): ?string
@@ -164,16 +165,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return trim("$first $last");
     }
 
-    public function isActive(): bool
+    public function getAccountStatus(): AccountStatus
     {
-        return $this->isActive;
+        return $this->accountStatus;
     }
 
-    public function setIsActive(bool $isActive): static
+    public function setAccountStatus(AccountStatus|string $accountStatus): void
     {
-        $this->isActive = $isActive;
-
-        return $this;
+        $this->accountStatus = is_string($accountStatus)
+            ? AccountStatus::from($accountStatus)
+            : $accountStatus;
     }
 
     public function getUpdatedAt(): DateTimeImmutable

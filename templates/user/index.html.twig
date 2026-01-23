@@ -42,10 +42,10 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% if user.isActive %}
+                            {% if user.accountStatus.isActive() %}
                                 <span class="badge bg-success">{{ 'user.status.active'|trans }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">{{ 'user.status.inactive'|trans }}</span>
+                                <span class="badge bg-secondary">{{ ('user.status.' ~ user.accountStatus.value)|trans }}</span>
                             {% endif %}
                         </td>
                         <td>
