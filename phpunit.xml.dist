@@ -6,7 +6,7 @@
     
     <testsuites>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+            <directory>tests/Controller</directory>
         </testsuite>
       <!--  <testsuite name="Functional">
             <directory>tests/Functional</directory>
@@ -25,8 +25,8 @@
         <env name="EXCEL_FILE_PATH" value="/tmp/test_import.xlsx"/>
 
         <!-- ###+ symfony/framework-bundle ### -->
-        <env name="APP_ENV" value="dev"/>
-        <env name="APP_SECRET" value=""/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_SECRET" value="$ecretf0rt3st"/>
         <!-- ###- symfony/framework-bundle ### -->
 
         <!-- ###+ doctrine/doctrine-bundle ### -->
