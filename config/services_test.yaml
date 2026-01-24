@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# Services specific to test environment
+services:
+    # Make all fixtures available as public services for testing
+    App\DataFixtures\:
+        resource: '../src/DataFixtures/'
+        autowire: true
+        public: true

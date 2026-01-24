@@ -26,9 +26,9 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # Disable dbname_suffix to use the same database as dev
-            # "TEST_TOKEN" is typically set by ParaTest
-            # dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            # Use SQLite in-memory for tests
+            driver: pdo_sqlite
+            url: '%env(resolve:DATABASE_URL)%'
 
 when@prod:
     doctrine:

@@ -4,15 +4,47 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\DataFixtures\UserFixtures;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class UserControllerTest extends WebTestCase
 {
-    public function testCreateUserAsAdmin(): void
+    private function createClientWithDatabase(): KernelBrowser
     {
         $client = static::createClient();
+
+        // Create schema for SQLite database
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
+        $schemaTool = new SchemaTool($entityManager);
+        $schemaTool->dropSchema($metadata);
+        $schemaTool->createSchema($metadata);
+
+        // Load fixtures using Doctrine fixture executor
+        $loader = new Loader();
+        /** @var UserFixtures $userFixtures */
+        $userFixtures = static::getContainer()->get(UserFixtures::class);
+        $loader->addFixture($userFixtures);
+
+        $purger = new ORMPurger($entityManager);
+        $executor = new ORMExecutor($entityManager, $purger);
+        $executor->execute($loader->getFixtures());
+
+        return $client;
+    }
+
+    public function testAdminCanCreateUser(): void
+    {
+        $client = $this->createClientWithDatabase();
 
         // Login as admin
         /** @var UserRepository $userRepository */
