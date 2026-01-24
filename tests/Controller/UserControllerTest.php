@@ -42,50 +42,6 @@ final class UserControllerTest extends WebTestCase
         return $client;
     }
 
-    public function testAdminCanCreateUser(): void
-    {
-        $client = $this->createClientWithDatabase();
-
-        // Login as admin
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin, 'Admin user not found. Make sure fixtures are loaded.');
-
-        $client->loginUser($admin);
-
-        // Access the new user form
-        $crawler = $client->request('GET', '/en/users/new');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'New User');
-
-        // Fill and submit the form
-        $form = $crawler->selectButton('Create User')->form([
-            'user[email]' => 'testuser@example.com',
-            'user[firstName]' => 'Test',
-            'user[lastName]' => 'User',
-            'user[password]' => 'TestPass123!',
-            'user[roles][0]' => 'ROLE_USER',
-        ]);
-
-        $client->submit($form);
-
-        // Should redirect to user index
-        $this->assertResponseRedirects('/en/users');
-
-        $client->followRedirect();
-        $this->assertSelectorExists('.alert-success');
-
-        // Verify user was created in database
-        $createdUser = $userRepository->findOneBy(['email' => 'testuser@example.com']);
-        $this->assertInstanceOf(User::class, $createdUser);
-        $this->assertSame('Test', $createdUser->getFirstName());
-        $this->assertSame('User', $createdUser->getLastName());
-        $this->assertContains('ROLE_USER', $createdUser->getRoles());
-    }
-
     public function testUserCanRegister(): void
     {
         $client = $this->createClientWithDatabase();
@@ -143,5 +99,77 @@ final class UserControllerTest extends WebTestCase
         // Follow redirect and verify user is logged in
         $client->followRedirect();
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testUserCanLogout(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        // Login as user first
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+
+        $client->loginUser($user);
+
+        // Verify user is logged in by accessing their own profile
+        $client->request('GET', '/en/users/' . $user->getId());
+        $this->assertResponseIsSuccessful();
+
+        // Logout
+        $client->request('GET', '/en/auth/logout');
+
+        // Should redirect after logout
+        $this->assertResponseRedirects();
+
+        // Try to access profile again - should redirect to login
+        $client->request('GET', '/en/users/' . $user->getId());
+        $this->assertResponseRedirects();
+    }
+
+    public function testAdminCanCreateUser(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        // Login as admin
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin, 'Admin user not found. Make sure fixtures are loaded.');
+
+        $client->loginUser($admin);
+
+        // Access the new user form
+        $crawler = $client->request('GET', '/en/users/new');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'New User');
+
+        // Fill and submit the form
+        $form = $crawler->selectButton('Create User')->form([
+            'user[email]' => 'testuser@example.com',
+            'user[firstName]' => 'Test',
+            'user[lastName]' => 'User',
+            'user[password]' => 'TestPass123!',
+            'user[roles][0]' => 'ROLE_USER',
+        ]);
+
+        $client->submit($form);
+
+        // Should redirect to user index
+        $this->assertResponseRedirects('/en/users');
+
+        $client->followRedirect();
+        $this->assertSelectorExists('.alert-success');
+
+        // Verify user was created in database
+        $createdUser = $userRepository->findOneBy(['email' => 'testuser@example.com']);
+        $this->assertInstanceOf(User::class, $createdUser);
+        $this->assertSame('Test', $createdUser->getFirstName());
+        $this->assertSame('User', $createdUser->getLastName());
+        $this->assertContains('ROLE_USER', $createdUser->getRoles());
     }
 }
