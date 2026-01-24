@@ -220,4 +220,113 @@ final class UserControllerTest extends WebTestCase
         $client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
     }
+
+    public function testUserCanOnlyEditOwnProfile(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $admin);
+
+        $client->loginUser($user);
+
+        // User can access their own edit page
+        $client->request('GET', '/en/users/'.$user->getId().'/edit');
+        $this->assertResponseIsSuccessful();
+
+        // User cannot access another user's edit page
+        $client->request('GET', '/en/users/'.$admin->getId().'/edit');
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdminCanEditAllProfiles(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertInstanceOf(User::class, $user);
+
+        $client->loginUser($admin);
+
+        // Admin can access their own edit page
+        $client->request('GET', '/en/users/'.$admin->getId().'/edit');
+        $this->assertResponseIsSuccessful();
+
+        // Admin can access other user's edit page
+        $client->request('GET', '/en/users/'.$user->getId().'/edit');
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testAdminCanDeleteUser(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $user = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertInstanceOf(User::class, $user);
+
+        $userId = $user->getId();
+
+        $client->loginUser($admin);
+
+        // Access user profile page to get the CSRF token
+        $crawler = $client->request('GET', '/en/users/'.$userId);
+        $this->assertResponseIsSuccessful();
+
+        // Get CSRF token from the delete form
+        $form = $crawler->selectButton('Delete')->form();
+        $client->submit($form);
+
+        // Should redirect to user index
+        $this->assertResponseRedirects('/en/users');
+
+        // Verify user was deleted
+        $deletedUser = $userRepository->find($userId);
+        $this->assertNull($deletedUser);
+    }
+
+    public function testUserCannotAnotherDeleteUser(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $otherUser);
+
+        $otherUserId = $otherUser->getId();
+
+        $client->loginUser($user);
+
+        // Make a request to initialize session
+        $client->request('GET', '/en/users/'.$user->getId());
+
+        // Try to delete another user directly via POST
+        $client->request('POST', '/en/users/'.$otherUserId.'/delete', [
+            '_token' => 'fake_token',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }
