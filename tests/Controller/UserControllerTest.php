@@ -115,7 +115,7 @@ final class UserControllerTest extends WebTestCase
         $client->loginUser($user);
 
         // Verify user is logged in by accessing their own profile
-        $client->request('GET', '/en/users/' . $user->getId());
+        $client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
 
         // Logout
@@ -125,7 +125,7 @@ final class UserControllerTest extends WebTestCase
         $this->assertResponseRedirects();
 
         // Try to access profile again - should redirect to login
-        $client->request('GET', '/en/users/' . $user->getId());
+        $client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseRedirects();
     }
 
@@ -171,5 +171,53 @@ final class UserControllerTest extends WebTestCase
         $this->assertSame('Test', $createdUser->getFirstName());
         $this->assertSame('User', $createdUser->getLastName());
         $this->assertContains('ROLE_USER', $createdUser->getRoles());
+    }
+
+    public function testUserCanOnlyAccessOwnProfile(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $admin);
+
+        $client->loginUser($user);
+
+        // User can access their own profile
+        $client->request('GET', '/en/users/'.$user->getId());
+        $this->assertResponseIsSuccessful();
+
+        // User cannot access another user's profile
+        $client->request('GET', '/en/users/'.$admin->getId());
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdminCanAccessAllUserProfiles(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertInstanceOf(User::class, $user);
+
+        $client->loginUser($admin);
+
+        // Admin can access their own profile
+        $client->request('GET', '/en/users/'.$admin->getId());
+        $this->assertResponseIsSuccessful();
+
+        // Admin can access other user's profile
+        $client->request('GET', '/en/users/'.$user->getId());
+        $this->assertResponseIsSuccessful();
     }
 }
