@@ -85,4 +85,63 @@ final class UserControllerTest extends WebTestCase
         $this->assertSame('User', $createdUser->getLastName());
         $this->assertContains('ROLE_USER', $createdUser->getRoles());
     }
+
+    public function testUserCanRegister(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        // Access the registration page
+        $crawler = $client->request('GET', '/en/auth/register');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Register');
+
+        // Fill and submit the registration form
+        $form = $crawler->selectButton('Create Account')->form([
+            'registration[email]' => 'newuser@example.com',
+            'registration[firstName]' => 'New',
+            'registration[lastName]' => 'User',
+            'registration[password]' => 'SecurePass123!',
+        ]);
+
+        $client->submit($form);
+
+        // Should redirect to login page after successful registration
+        $this->assertResponseRedirects('/en/auth/login');
+
+        // Verify user was created in database
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $newUser = $userRepository->findOneBy(['email' => 'newuser@example.com']);
+        $this->assertInstanceOf(User::class, $newUser);
+        $this->assertSame('New', $newUser->getFirstName());
+        $this->assertSame('User', $newUser->getLastName());
+        $this->assertContains('ROLE_USER', $newUser->getRoles());
+    }
+
+    public function testUserCanLogin(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        // Access the login page
+        $crawler = $client->request('GET', '/en/auth/login');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Login');
+
+        // Fill and submit the login form with fixture user credentials
+        $form = $crawler->selectButton('Sign In')->form([
+            '_username' => 'user@example.com',
+            '_password' => 'Test123!',
+        ]);
+
+        $client->submit($form);
+
+        // Should redirect after successful login
+        $this->assertResponseRedirects();
+
+        // Follow redirect and verify user is logged in
+        $client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
 }
