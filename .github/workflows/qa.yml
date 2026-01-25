@@ -94,3 +94,25 @@ jobs:
 
       - name: Run PHPCPD
         run: vendor/bin/phpcpd src --verbose
+
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    container:
+      image: jakzal/phpqa:php8.4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup cache
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
