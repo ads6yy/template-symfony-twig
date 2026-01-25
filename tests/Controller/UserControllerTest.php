@@ -329,4 +329,61 @@ final class UserControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
     }
+
+    public function testAdminCanToggleUserActiveStatus(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertInstanceOf(User::class, $user);
+
+        $userId = $user->getId();
+
+        $client->loginUser($admin);
+
+        // Access user profile page to initialize session
+        $crawler = $client->request('GET', '/en/users/'.$userId);
+        $this->assertResponseIsSuccessful();
+
+        // Find the toggle form by action URL and submit it
+        $form = $crawler->filter('form[action$="/toggle-active"]')->form();
+        $client->submit($form);
+
+        // Should redirect after toggle
+        $this->assertResponseRedirects();
+    }
+
+    public function testUserCannotToggleUserActiveStatus(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $otherUser);
+
+        $otherUserId = $otherUser->getId();
+
+        $client->loginUser($user);
+
+        // Make a request to initialize session
+        $client->request('GET', '/en/users/'.$user->getId());
+
+        // Try to toggle another user's active status
+        $client->request('POST', '/en/users/'.$otherUserId.'/toggle-active', [
+            '_token' => 'fake_token',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }
