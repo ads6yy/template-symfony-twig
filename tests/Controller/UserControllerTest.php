@@ -17,11 +17,18 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class UserControllerTest extends WebTestCase
 {
-    private function createClientWithDatabase(): KernelBrowser
-    {
-        $client = static::createClient();
+    private const USER_EMAIL = 'user@example.com';
+    private const ADMIN_EMAIL = 'admin@example.com';
+    private const OTHER_USER_EMAIL = 'jane.smith@example.com';
+    private const DEFAULT_PASSWORD = 'Test123!';
 
-        // Create schema for SQLite database
+    private KernelBrowser $client;
+    private UserRepository $userRepository;
+
+    private function createClientWithDatabase(): void
+    {
+        $this->client = static::createClient();
+
         /** @var EntityManagerInterface $entityManager */
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
@@ -29,7 +36,6 @@ final class UserControllerTest extends WebTestCase
         $schemaTool->dropSchema($metadata);
         $schemaTool->createSchema($metadata);
 
-        // Load fixtures using Doctrine fixture executor
         $loader = new Loader();
         /** @var UserFixtures $userFixtures */
         $userFixtures = static::getContainer()->get(UserFixtures::class);
@@ -39,20 +45,46 @@ final class UserControllerTest extends WebTestCase
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute($loader->getFixtures());
 
-        return $client;
+        /** @var UserRepository $repository */
+        $repository = static::getContainer()->get(UserRepository::class);
+        $this->userRepository = $repository;
+    }
+
+    private function getUser(string $email = self::USER_EMAIL): User
+    {
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+        $this->assertInstanceOf(User::class, $user, "User with email {$email} not found.");
+
+        return $user;
+    }
+
+    private function loginAs(string $email): User
+    {
+        $user = $this->getUser($email);
+        $this->client->loginUser($user);
+
+        return $user;
+    }
+
+    private function loginAsUser(): User
+    {
+        return $this->loginAs(self::USER_EMAIL);
+    }
+
+    private function loginAsAdmin(): User
+    {
+        return $this->loginAs(self::ADMIN_EMAIL);
     }
 
     public function testUserCanRegister(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        // Access the registration page
-        $crawler = $client->request('GET', '/en/auth/register');
+        $crawler = $this->client->request('GET', '/en/auth/register');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Register');
 
-        // Fill and submit the registration form
         $form = $crawler->selectButton('Create Account')->form([
             'registration[email]' => 'newuser@example.com',
             'registration[firstName]' => 'New',
@@ -60,16 +92,11 @@ final class UserControllerTest extends WebTestCase
             'registration[password]' => 'SecurePass123!',
         ]);
 
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect to login page after successful registration
         $this->assertResponseRedirects('/en/auth/login');
 
-        // Verify user was created in database
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $newUser = $userRepository->findOneBy(['email' => 'newuser@example.com']);
-        $this->assertInstanceOf(User::class, $newUser);
+        $newUser = $this->getUser('newuser@example.com');
         $this->assertSame('New', $newUser->getFirstName());
         $this->assertSame('User', $newUser->getLastName());
         $this->assertContains('ROLE_USER', $newUser->getRoles());
@@ -77,78 +104,53 @@ final class UserControllerTest extends WebTestCase
 
     public function testUserCanLogin(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        // Access the login page
-        $crawler = $client->request('GET', '/en/auth/login');
+        $crawler = $this->client->request('GET', '/en/auth/login');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Login');
 
-        // Fill and submit the login form with fixture user credentials
         $form = $crawler->selectButton('Sign In')->form([
-            '_username' => 'user@example.com',
-            '_password' => 'Test123!',
+            '_username' => self::USER_EMAIL,
+            '_password' => self::DEFAULT_PASSWORD,
         ]);
 
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect after successful login
         $this->assertResponseRedirects();
 
-        // Follow redirect and verify user is logged in
-        $client->followRedirect();
+        $this->client->followRedirect();
         $this->assertResponseIsSuccessful();
     }
 
     public function testUserCanLogout(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        // Login as user first
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $user = $this->loginAsUser();
 
-        $this->assertInstanceOf(User::class, $user);
-
-        $client->loginUser($user);
-
-        // Verify user is logged in by accessing their own profile
-        $client->request('GET', '/en/users/'.$user->getId());
+        $this->client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
 
-        // Logout
-        $client->request('GET', '/en/auth/logout');
-
-        // Should redirect after logout
+        $this->client->request('GET', '/en/auth/logout');
         $this->assertResponseRedirects();
 
-        // Try to access profile again - should redirect to login
-        $client->request('GET', '/en/users/'.$user->getId());
+        $this->client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseRedirects();
     }
 
     public function testAdminCanCreateUser(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        // Login as admin
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $this->loginAsAdmin();
 
-        $this->assertInstanceOf(User::class, $admin, 'Admin user not found. Make sure fixtures are loaded.');
-
-        $client->loginUser($admin);
-
-        // Access the new user form
-        $crawler = $client->request('GET', '/en/users/new');
+        $crawler = $this->client->request('GET', '/en/users/new');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'New User');
 
-        // Fill and submit the form
         $form = $crawler->selectButton('Create User')->form([
             'user[email]' => 'testuser@example.com',
             'user[firstName]' => 'Test',
@@ -157,17 +159,14 @@ final class UserControllerTest extends WebTestCase
             'user[roles][0]' => 'ROLE_USER',
         ]);
 
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect to user index
         $this->assertResponseRedirects('/en/users');
 
-        $client->followRedirect();
+        $this->client->followRedirect();
         $this->assertSelectorExists('.alert-success');
 
-        // Verify user was created in database
-        $createdUser = $userRepository->findOneBy(['email' => 'testuser@example.com']);
-        $this->assertInstanceOf(User::class, $createdUser);
+        $createdUser = $this->getUser('testuser@example.com');
         $this->assertSame('Test', $createdUser->getFirstName());
         $this->assertSame('User', $createdUser->getLastName());
         $this->assertContains('ROLE_USER', $createdUser->getRoles());
@@ -175,155 +174,90 @@ final class UserControllerTest extends WebTestCase
 
     public function testUserCanOnlyAccessOwnProfile(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $this->loginAsUser();
+        $admin = $this->getUser(self::ADMIN_EMAIL);
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(User::class, $admin);
-
-        $client->loginUser($user);
-
-        // User can access their own profile
-        $client->request('GET', '/en/users/'.$user->getId());
+        $this->client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
 
-        // User cannot access another user's profile
-        $client->request('GET', '/en/users/'.$admin->getId());
+        $this->client->request('GET', '/en/users/'.$admin->getId());
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testAdminCanAccessAllUserProfiles(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $admin = $this->loginAsAdmin();
+        $user = $this->getUser(self::USER_EMAIL);
 
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin);
-        $this->assertInstanceOf(User::class, $user);
-
-        $client->loginUser($admin);
-
-        // Admin can access their own profile
-        $client->request('GET', '/en/users/'.$admin->getId());
+        $this->client->request('GET', '/en/users/'.$admin->getId());
         $this->assertResponseIsSuccessful();
 
-        // Admin can access other user's profile
-        $client->request('GET', '/en/users/'.$user->getId());
+        $this->client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
     }
 
     public function testUserCanOnlyEditOwnProfile(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $this->loginAsUser();
+        $admin = $this->getUser(self::ADMIN_EMAIL);
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(User::class, $admin);
-
-        $client->loginUser($user);
-
-        // User can access their own edit page
-        $client->request('GET', '/en/users/'.$user->getId().'/edit');
+        $this->client->request('GET', '/en/users/'.$user->getId().'/edit');
         $this->assertResponseIsSuccessful();
 
-        // User cannot access another user's edit page
-        $client->request('GET', '/en/users/'.$admin->getId().'/edit');
+        $this->client->request('GET', '/en/users/'.$admin->getId().'/edit');
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testAdminCanEditAllProfiles(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $admin = $this->loginAsAdmin();
+        $user = $this->getUser(self::USER_EMAIL);
 
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin);
-        $this->assertInstanceOf(User::class, $user);
-
-        $client->loginUser($admin);
-
-        // Admin can access their own edit page
-        $client->request('GET', '/en/users/'.$admin->getId().'/edit');
+        $this->client->request('GET', '/en/users/'.$admin->getId().'/edit');
         $this->assertResponseIsSuccessful();
 
-        // Admin can access other user's edit page
-        $client->request('GET', '/en/users/'.$user->getId().'/edit');
+        $this->client->request('GET', '/en/users/'.$user->getId().'/edit');
         $this->assertResponseIsSuccessful();
     }
 
     public function testAdminCanDeleteUser(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $this->loginAsAdmin();
+        $otherUser = $this->getUser(self::OTHER_USER_EMAIL);
+        $userId = $otherUser->getId();
 
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-        $user = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin);
-        $this->assertInstanceOf(User::class, $user);
-
-        $userId = $user->getId();
-
-        $client->loginUser($admin);
-
-        // Access user profile page to get the CSRF token
-        $crawler = $client->request('GET', '/en/users/'.$userId);
+        $crawler = $this->client->request('GET', '/en/users/'.$userId);
         $this->assertResponseIsSuccessful();
 
-        // Get CSRF token from the delete form
         $form = $crawler->selectButton('Delete')->form();
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect to user index
         $this->assertResponseRedirects('/en/users');
 
-        // Verify user was deleted
-        $deletedUser = $userRepository->find($userId);
+        $deletedUser = $this->userRepository->find($userId);
         $this->assertNull($deletedUser);
     }
 
-    public function testUserCannotAnotherDeleteUser(): void
+    public function testUserCannotDeleteAnotherUser(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $this->loginAsUser();
+        $otherUser = $this->getUser(self::OTHER_USER_EMAIL);
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+        $this->client->request('GET', '/en/users/'.$user->getId());
 
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(User::class, $otherUser);
-
-        $otherUserId = $otherUser->getId();
-
-        $client->loginUser($user);
-
-        // Make a request to initialize session
-        $client->request('GET', '/en/users/'.$user->getId());
-
-        // Try to delete another user directly via POST
-        $client->request('POST', '/en/users/'.$otherUserId.'/delete', [
+        $this->client->request('POST', '/en/users/'.$otherUser->getId().'/delete', [
             '_token' => 'fake_token',
         ]);
 
@@ -332,55 +266,30 @@ final class UserControllerTest extends WebTestCase
 
     public function testAdminCanToggleUserActiveStatus(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $this->loginAsAdmin();
+        $user = $this->getUser(self::USER_EMAIL);
 
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin);
-        $this->assertInstanceOf(User::class, $user);
-
-        $userId = $user->getId();
-
-        $client->loginUser($admin);
-
-        // Access user profile page to initialize session
-        $crawler = $client->request('GET', '/en/users/'.$userId);
+        $crawler = $this->client->request('GET', '/en/users/'.$user->getId());
         $this->assertResponseIsSuccessful();
 
-        // Find the toggle form by action URL and submit it
         $form = $crawler->filter('form[action$="/toggle-active"]')->form();
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect after toggle
         $this->assertResponseRedirects();
     }
 
     public function testUserCannotToggleUserActiveStatus(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $this->loginAsUser();
+        $otherUser = $this->getUser(self::OTHER_USER_EMAIL);
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+        $this->client->request('GET', '/en/users/'.$user->getId());
 
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(User::class, $otherUser);
-
-        $otherUserId = $otherUser->getId();
-
-        $client->loginUser($user);
-
-        // Make a request to initialize session
-        $client->request('GET', '/en/users/'.$user->getId());
-
-        // Try to toggle another user's active status
-        $client->request('POST', '/en/users/'.$otherUserId.'/toggle-active', [
+        $this->client->request('POST', '/en/users/'.$otherUser->getId().'/toggle-active', [
             '_token' => 'fake_token',
         ]);
 
@@ -389,88 +298,52 @@ final class UserControllerTest extends WebTestCase
 
     public function testUserCanChangeOwnPassword(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $user = $this->loginAsUser();
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-
-        $this->assertInstanceOf(User::class, $user);
-
-        $userId = $user->getId();
-
-        $client->loginUser($user);
-
-        // Access the change password page
-        $crawler = $client->request('GET', '/en/users/'.$userId.'/change-password');
+        $crawler = $this->client->request('GET', '/en/users/'.$user->getId().'/change-password');
         $this->assertResponseIsSuccessful();
 
-        // Fill and submit the form (user must provide old password)
         $form = $crawler->selectButton('Change Password')->form([
-            'change_password[oldPassword]' => 'Test123!',
+            'change_password[oldPassword]' => self::DEFAULT_PASSWORD,
             'change_password[newPassword]' => 'NewPass456!',
             'change_password[confirmPassword]' => 'NewPass456!',
         ]);
 
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect to user profile
-        $this->assertResponseRedirects('/en/users/'.$userId);
+        $this->assertResponseRedirects('/en/users/'.$user->getId());
     }
 
     public function testAdminCanChangeAnotherUserPassword(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $this->loginAsAdmin();
+        $user = $this->getUser(self::USER_EMAIL);
 
-        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-
-        $this->assertInstanceOf(User::class, $admin);
-        $this->assertInstanceOf(User::class, $user);
-
-        $userId = $user->getId();
-
-        $client->loginUser($admin);
-
-        // Access the change password page for another user
-        $crawler = $client->request('GET', '/en/users/'.$userId.'/change-password');
+        $crawler = $this->client->request('GET', '/en/users/'.$user->getId().'/change-password');
         $this->assertResponseIsSuccessful();
 
-        // Fill and submit the form (admin doesn't need old password)
         $form = $crawler->selectButton('Change Password')->form([
             'change_password[newPassword]' => 'AdminChanged123!',
             'change_password[confirmPassword]' => 'AdminChanged123!',
         ]);
 
-        $client->submit($form);
+        $this->client->submit($form);
 
-        // Should redirect to user profile
-        $this->assertResponseRedirects('/en/users/'.$userId);
+        $this->assertResponseRedirects('/en/users/'.$user->getId());
     }
 
     public function testUserCannotChangeAnotherUserPassword(): void
     {
-        $client = $this->createClientWithDatabase();
+        $this->createClientWithDatabase();
 
-        /** @var UserRepository $userRepository */
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $this->loginAsUser();
+        $otherUser = $this->getUser(self::OTHER_USER_EMAIL);
 
-        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
-        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
-
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(User::class, $otherUser);
-
-        $otherUserId = $otherUser->getId();
-
-        $client->loginUser($user);
-
-        // Try to access another user's change password page
-        $client->request('GET', '/en/users/'.$otherUserId.'/change-password');
+        $this->client->request('GET', '/en/users/'.$otherUser->getId().'/change-password');
 
         $this->assertResponseStatusCodeSame(403);
     }
