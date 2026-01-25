@@ -5,7 +5,7 @@
          colors="true">
     
     <testsuites>
-        <testsuite name="Unit">
+        <testsuite name="Controller">
             <directory>tests/Controller</directory>
         </testsuite>
       <!--  <testsuite name="Functional">
