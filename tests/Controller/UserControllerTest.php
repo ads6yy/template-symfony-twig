@@ -386,4 +386,92 @@ final class UserControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
     }
+
+    public function testUserCanChangeOwnPassword(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+
+        $userId = $user->getId();
+
+        $client->loginUser($user);
+
+        // Access the change password page
+        $crawler = $client->request('GET', '/en/users/'.$userId.'/change-password');
+        $this->assertResponseIsSuccessful();
+
+        // Fill and submit the form (user must provide old password)
+        $form = $crawler->selectButton('Change Password')->form([
+            'change_password[oldPassword]' => 'Test123!',
+            'change_password[newPassword]' => 'NewPass456!',
+            'change_password[confirmPassword]' => 'NewPass456!',
+        ]);
+
+        $client->submit($form);
+
+        // Should redirect to user profile
+        $this->assertResponseRedirects('/en/users/'.$userId);
+    }
+
+    public function testAdminCanChangeAnotherUserPassword(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $admin = $userRepository->findOneBy(['email' => 'admin@example.com']);
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertInstanceOf(User::class, $user);
+
+        $userId = $user->getId();
+
+        $client->loginUser($admin);
+
+        // Access the change password page for another user
+        $crawler = $client->request('GET', '/en/users/'.$userId.'/change-password');
+        $this->assertResponseIsSuccessful();
+
+        // Fill and submit the form (admin doesn't need old password)
+        $form = $crawler->selectButton('Change Password')->form([
+            'change_password[newPassword]' => 'AdminChanged123!',
+            'change_password[confirmPassword]' => 'AdminChanged123!',
+        ]);
+
+        $client->submit($form);
+
+        // Should redirect to user profile
+        $this->assertResponseRedirects('/en/users/'.$userId);
+    }
+
+    public function testUserCannotChangeAnotherUserPassword(): void
+    {
+        $client = $this->createClientWithDatabase();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(['email' => 'user@example.com']);
+        $otherUser = $userRepository->findOneBy(['email' => 'jane.smith@example.com']);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $otherUser);
+
+        $otherUserId = $otherUser->getId();
+
+        $client->loginUser($user);
+
+        // Try to access another user's change password page
+        $client->request('GET', '/en/users/'.$otherUserId.'/change-password');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }
