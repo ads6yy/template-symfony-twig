@@ -33,8 +33,8 @@ This project is evolving as I implement more "classic" modules. You can track th
 | **Symfony Message**     | Message/Queue handling implementation.                        | ✅ Done |
 | **Swagger**             | API documentation with Swagger/OpenAPI.                       | ✅ Done |
 | **QA CI**               | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
-| **Workflow**            | Basic Symfony Workflow implementation                         | ⏳ Todo |
-| **Basic PHPUnit Tests** | Unit and functional testing setup.                            | ⏳ Todo |
+| **Workflow**            | Basic Symfony Workflow implementation                         | ✅ Done |
+| **Basic PHPUnit Tests** | Unit and functional testing setup.                            | ✅ Done |
 
 *Progress tracked via [Template - Symfony Twig](https://github.com/users/ads6yy/projects/1).*
 
