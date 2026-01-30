@@ -22,19 +22,21 @@ way. It is designed to act as a code bank or knowledge base that I can refer to 
 
 This project is evolving as I implement more "classic" modules. You can track the progress of specific features below:
 
-| Feature / Module        | Description                                                   | Status |
-|:------------------------|:--------------------------------------------------------------|:-------|
-| **User Authentication** | Standard Login/Registration using Symfony Security.           | ✅ Done |
-| **Database & Entity**   | Clean implementation of Doctrine Entities and Migrations.     | ✅ Done |
-| **Admin Dashboard**     | Basic administration for user management.                     | ✅ Done |
-| **Form**                | Form handling with validation and email notification.         | ✅ Done |
-| **Mailer**              | Symfony Mailer integration for sending emails.                | ✅ Done |
-| **Translation System**  | Multi-language support with Symfony Translation.              | ✅ Done |
-| **Symfony Message**     | Message/Queue handling implementation.                        | ✅ Done |
-| **Swagger**             | API documentation with Swagger/OpenAPI.                       | ✅ Done |
-| **QA CI**               | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
-| **Workflow**            | Basic Symfony Workflow implementation                         | ✅ Done |
-| **Basic PHPUnit Tests** | Unit and functional testing setup.                            | ✅ Done |
+| Feature / Module          | Description                                                   | Status |
+|:--------------------------|:--------------------------------------------------------------|:-------|
+| **User Authentication**   | Standard Login/Registration using Symfony Security.           | ✅ Done |
+| **Database & Entity**     | Clean implementation of Doctrine Entities and Migrations.     | ✅ Done |
+| **Admin Dashboard**       | Basic administration for user management.                     | ✅ Done |
+| **Form**                  | Form handling with validation and email notification.         | ✅ Done |
+| **Mailer**                | Symfony Mailer integration for sending emails.                | ✅ Done |
+| **Translation System**    | Multi-language support with Symfony Translation.              | ✅ Done |
+| **Symfony Message**       | Message/Queue handling implementation.                        | ✅ Done |
+| **Swagger**               | API documentation with Swagger/OpenAPI.                       | ✅ Done |
+| **QA CI**                 | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
+| **Workflow**              | Basic Symfony Workflow implementation                         | ✅ Done |
+| **Basic PHPUnit Tests**   | Unit and functional testing setup.                            | ✅ Done |
+| **Panther PHPUnit Tests** | Panther testing setup.                                        | ⏳ Todo |
+| **Symfony Notifier**      | Desktop notification implementation.                          | ⏳ Todo |
 
 *Progress tracked via [Template - Symfony Twig](https://github.com/users/ads6yy/projects/1).*
 
