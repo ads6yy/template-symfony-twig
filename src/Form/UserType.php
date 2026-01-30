@@ -33,7 +33,7 @@ final class UserType extends BaseUserType
                 ->add('accountStatus', EnumType::class, [
                     'class' => AccountStatus::class,
                     'label' => 'form.account_status.label',
-                    'choice_label' => fn (AccountStatus $status) => 'user.status.'.$status->value,
+                    'choice_label' => static fn (AccountStatus $status) => 'user.status.'.$status->value,
                     'attr' => ['class' => 'form-select'],
                     'placeholder' => 'form.account_status.placeholder',
                 ])

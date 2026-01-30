@@ -52,7 +52,7 @@ class UserApiController extends AbstractController
 
         $users = $this->userRepository->findAll();
 
-        $data = array_map(function ($user) {
+        $data = array_map(static function ($user) {
             return [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
