@@ -1,5 +1,13 @@
 # yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
 
+# Redirect root to default locale
+app_root:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+    defaults:
+        path: /en
+        permanent: false
+
 # API controllers (no locale prefix)
 api:
     resource:
