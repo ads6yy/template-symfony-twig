@@ -102,13 +102,6 @@ form:
     label: 'Statut du compte'
     placeholder: 'Choisissez un statut'
 
-# Template
-template:
-  hello: Bonjour
-  message: Ce message amical provient de
-  controller: Votre contrôleur à
-  template: Votre template à
-
 # Footer
 footer:
   copyright: Tous droits réservés.

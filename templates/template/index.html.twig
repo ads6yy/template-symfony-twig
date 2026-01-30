@@ -1,20 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'template.hello'|trans }} TemplateController!{% endblock %}
+{% block title %}Template Symfony + Twig{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>{{ 'template.hello'|trans }} {{ controller_name }}! ✅</h1>
-
-    {{ 'template.message'|trans }}:
-    <ul>
-        <li>{{ 'template.controller'|trans }} <code>/srv/src/Controller/TemplateController.php</code></li>
-        <li>{{ 'template.template'|trans }} <code>/srv/templates/template/index.html.twig</code></li>
-    </ul>
-</div>
 {% endblock %}

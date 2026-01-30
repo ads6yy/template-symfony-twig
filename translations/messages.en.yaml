@@ -102,13 +102,6 @@ form:
     label: 'Account Status'
     placeholder: 'Choose a status'
 
-# Template
-template:
-  hello: Hello
-  message: This friendly message is coming from
-  controller: Your controller at
-  template: Your template at
-
 # Footer
 footer:
   copyright: All rights reserved.
