@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\Message\DesktopMessage;
+use Symfony\Component\Notifier\TexterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -34,6 +36,7 @@ final class UserController extends AbstractController
         protected TranslatorInterface $translator,
         protected MailerInterface $mailer,
         protected MessageBusInterface $messageBus,
+        protected TexterInterface $texter,
     ) {
     }
 
@@ -190,6 +193,13 @@ final class UserController extends AbstractController
                     $userAccountStatusStateMachine->apply($user, 'unsuspend');
                     $this->logger->info('User unsuspended via workflow', ['id' => $user->getId()]);
                     $this->addFlash('success', 'flash.user.status_updated');
+
+                    $message = new DesktopMessage(
+                        'New subscription! 🎉',
+                        sprintf('%s is a new subscriber', $user->getFullName())
+                    );
+
+                    $this->texter->send($message);
                 } else {
                     $this->addFlash('warning', 'flash.user.transition_not_allowed');
                 }
