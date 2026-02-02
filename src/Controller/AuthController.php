@@ -16,10 +16,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\Message\DesktopMessage;
+use Symfony\Component\Notifier\TexterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Throwable;
 
 #[Route('/auth', name: 'app_auth_')]
 final class AuthController extends AbstractController
@@ -32,6 +35,7 @@ final class AuthController extends AbstractController
         protected TranslatorInterface $translator,
         protected MailerInterface $mailer,
         protected MessageBusInterface $messageBus,
+        protected TexterInterface $texter,
     ) {
     }
 
@@ -116,6 +120,16 @@ final class AuthController extends AbstractController
 
             $this->logger->info('User registered', ['email' => $user->getEmail()]);
             $this->addFlash('success', 'flash.auth.registration_success');
+
+            try {
+                $message = new DesktopMessage(
+                    'You are now registered ! 🎉',
+                    'Welcome to  Template Symfony + Twig application.'
+                );
+                $this->texter->send($message);
+            } catch (Throwable $exception) {
+                $this->logger->warning('Unable to send Desktop notification @exception', ['exception' => $exception->getMessage()]);
+            }
 
             return $this->redirectToRoute('app_auth_login');
         }
