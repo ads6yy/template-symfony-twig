@@ -6,7 +6,7 @@ ENV \
 
 
 RUN apt-get update \
-    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor
+    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor libnotify-bin
 
 RUN  docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/ \
      && docker-php-ext-install gd \
