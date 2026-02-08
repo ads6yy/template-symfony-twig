@@ -2,5 +2,24 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
-  ]
+  ],
+  "packageRules": [
+    {
+      "description": "Disable all updates by default",
+      "matchPackageNames": ["*"],
+      "enabled": false
+    },
+    {
+      "description": "Enable only security-related updates for Composer",
+      "matchManagers": ["composer"],
+      "enabled": true,
+      "vulnerabilityAlerts": {
+        "enabled": true
+      }
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "osvVulnerabilityAlerts": true
 }
