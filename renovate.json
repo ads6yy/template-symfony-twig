@@ -10,9 +10,10 @@
       "enabled": false
     },
     {
-      "description": "Enable only security-related updates for Composer",
+      "description": "Enable only security updates for Composer",
       "matchManagers": ["composer"],
-      "enabled": true,
+      "matchUpdateTypes": ["patch"],
+      "matchDatasources": ["packagist"],
       "vulnerabilityAlerts": {
         "enabled": true
       }
