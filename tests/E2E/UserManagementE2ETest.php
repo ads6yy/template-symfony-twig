@@ -55,7 +55,7 @@ final class UserManagementE2ETest extends PantherTestCase
 
         $client->request('GET', '/en/users');
 
-        $client->findElement(WebDriverBy::xpath('//td[contains(text(), "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//td[contains(., "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
 
         $client->waitFor('.card');
 
@@ -73,7 +73,7 @@ final class UserManagementE2ETest extends PantherTestCase
 
         $client->request('GET', '/en/users');
 
-        $client->findElement(WebDriverBy::xpath('//td[contains(text(), "jane.smith@example.com")]/ancestor::tr//a[contains(@class, "btn-warning")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//td[contains(., "jane.smith@example.com")]/ancestor::tr//a[contains(@class, "btn-warning")]'))->click();
 
         $client->waitFor('form');
 
@@ -99,7 +99,7 @@ final class UserManagementE2ETest extends PantherTestCase
         $tableText = $client->findElement(WebDriverBy::cssSelector('table'))->getText();
         $this->assertStringContainsString('moderator@example.com', $tableText);
 
-        $client->findElement(WebDriverBy::xpath('//td[contains(text(), "moderator@example.com")]/ancestor::tr//button[contains(@class, "btn-danger")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//td[contains(., "moderator@example.com")]/ancestor::tr//button[contains(@class, "btn-danger")]'))->click();
 
         $client->switchTo()->alert()->accept();
 
@@ -117,7 +117,7 @@ final class UserManagementE2ETest extends PantherTestCase
 
         $client->request('GET', '/en/users');
 
-        $client->findElement(WebDriverBy::xpath('//td[contains(text(), "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//td[contains(., "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
 
         $client->waitFor('.card');
 
@@ -134,11 +134,11 @@ final class UserManagementE2ETest extends PantherTestCase
 
         $client->request('GET', '/en/users');
 
-        $client->findElement(WebDriverBy::xpath('//td[contains(text(), "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//td[contains(., "user@example.com")]/ancestor::tr//a[contains(@class, "btn-info")]'))->click();
 
         $client->waitFor('.card');
 
-        $client->findElement(WebDriverBy::xpath('//a[contains(text(), "Change Password")]'))->click();
+        $client->findElement(WebDriverBy::xpath('//a[contains(., "Change Password")]'))->click();
 
         $client->waitFor('form');
         $this->assertSelectorTextContains('h2', 'Change Password');
