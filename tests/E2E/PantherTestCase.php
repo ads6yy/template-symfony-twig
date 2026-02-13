@@ -23,6 +23,16 @@ abstract class PantherTestCase extends BasePantherTestCase
 
     private static bool $fixturesLoaded = false;
 
+    protected function setUp(): void
+    {
+        static::loadFixtures();
+
+        if (static::$pantherClient !== null) {
+            static::$pantherClient->getCookieJar()->clear();
+            static::$pantherClient->request('GET', '/en');
+        }
+    }
+
     protected static function loadFixtures(): void
     {
         if (self::$fixturesLoaded) {

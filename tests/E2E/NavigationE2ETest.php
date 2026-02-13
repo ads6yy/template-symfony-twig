@@ -8,11 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 
 final class NavigationE2ETest extends PantherTestCase
 {
-    protected function setUp(): void
-    {
-        static::loadFixtures();
-    }
-
     public function testHomepageLoads(): void
     {
         $client = static::createPantherClient();
@@ -29,7 +24,7 @@ final class NavigationE2ETest extends PantherTestCase
 
         $client->findElement(WebDriverBy::id('languageDropdown'))->click();
         $client->waitForVisibility('.dropdown-menu');
-        $client->findElement(WebDriverBy::xpath('//a[@class="dropdown-item " and text()="Français"]'))->click();
+        $client->findElement(WebDriverBy::xpath('//a[contains(@class, "dropdown-item") and text()="Français"]'))->click();
 
         $client->waitFor('.navbar');
 

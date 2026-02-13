@@ -8,11 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 
 final class UserManagementE2ETest extends PantherTestCase
 {
-    protected function setUp(): void
-    {
-        static::loadFixtures();
-    }
-
     public function testAdminSeesUserList(): void
     {
         $client = static::createPantherClient();

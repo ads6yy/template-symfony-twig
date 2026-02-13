@@ -8,11 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 
 final class AuthenticationE2ETest extends PantherTestCase
 {
-    protected function setUp(): void
-    {
-        static::loadFixtures();
-    }
-
     public function testLoginPageLoads(): void
     {
         $client = static::createPantherClient();
