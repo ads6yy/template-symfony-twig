@@ -69,6 +69,14 @@ abstract class BaseUserType extends AbstractType
             'label' => 'form.password.label',
             'constraints' => [
                 new NotBlank(message: 'validation.password.not_blank'),
+                new \Symfony\Component\Validator\Constraints\Length([
+                    'min' => 8,
+                    'minMessage' => 'validation.password.min_length',
+                    'max' => 4096,
+                ]),
+                new \Symfony\Component\Validator\Constraints\NotCompromisedPassword(
+                    message: 'validation.password.compromised'
+                ),
             ],
             'attr' => [
                 'class' => 'form-control',
