@@ -39,17 +39,7 @@ composer analyse
 
 ## 📚 Documentation
 
-- **[REVIEW_AND_RECOMMENDATIONS.md](REVIEW_AND_RECOMMENDATIONS.md)** - Comprehensive code review and enhancement recommendations
 - **[CLAUDE.md](CLAUDE.md)** - AI assistant guidance for working with this codebase
-
-## 🔐 Security Features
-
-- ✅ Login rate limiting (5 attempts per 15 minutes)
-- ✅ Password strength validation (min 8 chars + compromised password check)
-- ✅ Security headers (CSP, X-Frame-Options, HSTS, etc.)
-- ✅ CSRF protection on all forms
-- ✅ BCrypt password hashing
-- ✅ Role-based access control (RBAC)
 
 ## 📅 Roadmap & Upcoming Features
 
@@ -78,4 +68,4 @@ This project is evolving as I implement more "classic" modules. You can track th
 
 ## 📄 License
 
-This code is open-source. Feel free to use these patterns and implementations in your own projects. 
+This code is open-source. Feel free to use these patterns and implementations in your own projects.
