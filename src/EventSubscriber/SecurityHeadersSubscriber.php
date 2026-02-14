@@ -13,6 +13,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 final class SecurityHeadersSubscriber implements EventSubscriberInterface
 {
+    public function __construct(
+        private readonly string $environment,
+    ) {
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -47,7 +52,7 @@ final class SecurityHeadersSubscriber implements EventSubscriberInterface
         );
 
         // Only add HSTS in production
-        if ('prod' === ($_ENV['APP_ENV'] ?? 'dev')) {
+        if ('prod' === $this->environment) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
     }

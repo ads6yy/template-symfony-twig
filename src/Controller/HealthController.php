@@ -29,7 +29,7 @@ final class HealthController extends AbstractController
         return new JsonResponse([
             'status' => $isHealthy ? 'healthy' : 'unhealthy',
             'checks' => $checks,
-            'timestamp' => time(),
+            'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
         ], $isHealthy ? 200 : 503);
     }
 
