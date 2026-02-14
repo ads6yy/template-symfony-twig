@@ -62,24 +62,30 @@ composer test:e2e
 
 This project is evolving as I implement more "classic" modules. You can track the progress of specific features below:
 
-| Feature / Module            | Description                                                   | Status |
-|:----------------------------|:--------------------------------------------------------------|:-------|
-| **User Authentication**     | Standard Login/Registration using Symfony Security.           | ✅ Done |
-| **Database & Entity**       | Clean implementation of Doctrine Entities and Migrations.     | ✅ Done |
-| **Admin Dashboard**         | Basic administration for user management.                     | ✅ Done |
-| **Form**                    | Form handling with validation and email notification.         | ✅ Done |
-| **Mailer**                  | Symfony Mailer integration for sending emails.                | ✅ Done |
-| **Translation System**      | Multi-language support with Symfony Translation.              | ✅ Done |
-| **Symfony Message**         | Message/Queue handling implementation.                        | ✅ Done |
-| **Swagger**                 | API documentation with Swagger/OpenAPI.                       | ✅ Done |
-| **QA CI**                   | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
-| **Workflow**                | Basic Symfony Workflow implementation                         | ✅ Done |
-| **Basic PHPUnit Tests**     | Unit and functional testing setup.                            | ✅ Done |
-| **Symfony Notifier**        | Desktop notification implementation.                          | ✅ Done |
-| **Renovate implementation** | Renovate setup.                                               | ✅ Done |
-| **Panther PHPUnit Tests**   | Panther testing setup.                                        | ✅ Done |
-| **Security Hardening**      | Rate limiting, password policies, security headers.           | ✅ Done |
-| **Health Check Endpoint**   | System health monitoring endpoint.                            | ✅ Done |
+| Feature / Module             | Description                                                   | Status |
+|:-----------------------------|:--------------------------------------------------------------|:-------|
+| **User Authentication**      | Standard Login/Registration using Symfony Security.           | ✅ Done |
+| **Database & Entity**        | Clean implementation of Doctrine Entities and Migrations.     | ✅ Done |
+| **Admin Dashboard**          | Basic administration for user management.                     | ✅ Done |
+| **Form**                     | Form handling with validation and email notification.         | ✅ Done |
+| **Mailer**                   | Symfony Mailer integration for sending emails.                | ✅ Done |
+| **Translation System**       | Multi-language support with Symfony Translation.              | ✅ Done |
+| **Symfony Message**          | Message/Queue handling implementation.                        | ✅ Done |
+| **Swagger**                  | API documentation with Swagger/OpenAPI.                       | ✅ Done |
+| **QA CI**                    | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
+| **Workflow**                 | Basic Symfony Workflow implementation                         | ✅ Done |
+| **Basic PHPUnit Tests**      | Unit and functional testing setup.                            | ✅ Done |
+| **Symfony Notifier**         | Desktop notification implementation.                          | ✅ Done |
+| **Renovate implementation**  | Renovate setup.                                               | ✅ Done |
+| **Panther PHPUnit Tests**    | Panther testing setup.                                        | ✅ Done |
+| **Security Hardening**       | Rate limiting, password policies, security headers.           | ✅ Done |
+| **Health Check Endpoint**    | System health monitoring endpoint.                            | ✅ Done |
+| **Email Verification**       | Email verification on user registration.                      | ⏳ Todo |
+| **Password Reset**           | Password reset functionality via email.                       | ⏳ Todo |
+| **Two-Factor Auth (2FA)**    | 2FA implementation (TOTP/SMS).                                | ⏳ Todo |
+| **API Versioning**           | API versioning and pagination support.                        | ⏳ Todo |
+| **Application Monitoring**   | Integration with Sentry or New Relic.                         | ⏳ Todo |
+| **Performance Optimization** | Redis caching, OPcache configuration.                         | ⏳ Todo |
 
 *Progress tracked via [Template - Symfony Twig](https://github.com/users/ads6yy/projects/1).*
 
