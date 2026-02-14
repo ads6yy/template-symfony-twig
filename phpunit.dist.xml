@@ -28,11 +28,20 @@
         <!-- MESSENGER_TRANSPORT_DSN=redis://localhost:6379/messages -->
         <env name="MESSENGER_TRANSPORT_DSN" value="doctrine://default?auto_setup=0"/>
         <!-- ###- symfony/messenger ### -->
+
+        <!-- ###+ symfony/panther ### -->
+        <env name="PANTHER_NO_HEADLESS" value="0"/>
+        <env name="PANTHER_APP_ENV" value="test"/>
+        <!-- ###- symfony/panther ### -->
     </php>
 
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
+            <exclude>tests/E2E</exclude>
+        </testsuite>
+        <testsuite name="e2e">
+            <directory>tests/E2E</directory>
         </testsuite>
     </testsuites>
 
@@ -53,5 +62,6 @@
     </source>
 
     <extensions>
+        <bootstrap class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
 </phpunit>
