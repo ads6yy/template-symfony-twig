@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\DBAL\Connection;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+
+use function in_array;
 
 final class HealthController extends AbstractController
 {
@@ -24,12 +29,12 @@ final class HealthController extends AbstractController
             'app' => true, // App is running if we reach here
         ];
 
-        $isHealthy = !\in_array(false, $checks, true);
+        $isHealthy = !in_array(false, $checks, true);
 
         return new JsonResponse([
             'status' => $isHealthy ? 'healthy' : 'unhealthy',
             'checks' => $checks,
-            'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            'timestamp' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
         ], $isHealthy ? 200 : 503);
     }
 
@@ -39,7 +44,7 @@ final class HealthController extends AbstractController
             $this->connection->executeQuery('SELECT 1');
 
             return true;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }
