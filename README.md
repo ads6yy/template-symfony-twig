@@ -37,7 +37,7 @@ This project is evolving as I implement more "classic" modules. You can track th
 | **Basic PHPUnit Tests**     | Unit and functional testing setup.                            | ✅ Done |
 | **Symfony Notifier**        | Desktop notification implementation.                          | ✅ Done |
 | **Renovate implementation** | Renovate setup.                                               | ✅ Done |
-| **Panther PHPUnit Tests**   | Panther testing setup.                                        | ⏳ Todo |
+| **Panther PHPUnit Tests**   | Panther testing setup.                                        | ✅ Done |
 
 *Progress tracked via [Template - Symfony Twig](https://github.com/users/ads6yy/projects/1).*
 
