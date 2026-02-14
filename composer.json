@@ -36,6 +36,7 @@
         "systemsdk/phpcpd": "^8.2.4"
     },
     "require-dev": {
+        "dbrekelmans/bdi": "^1.4",
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
         "friendsofphp/php-cs-fixer": "^3.93.1",
         "phpstan/phpstan": "^2.1.37",

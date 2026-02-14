@@ -24,8 +24,11 @@ way. It is designed to act as a code bank or knowledge base that I can refer to 
 # Install dependencies
 composer install
 
-# Run tests
+# Run unit and functional tests
 composer test
+
+# Run E2E tests (requires browser drivers - see below)
+composer test:e2e
 
 # Run QA checks
 composer qa
@@ -36,6 +39,20 @@ composer lint
 # Run static analysis
 composer analyse
 ```
+
+### Running E2E Tests
+
+E2E tests use Symfony Panther and require browser drivers. **First-time setup:**
+
+```bash
+# Install browser drivers (geckodriver, chromedriver)
+vendor/bin/bdi detect drivers
+
+# Then run E2E tests
+composer test:e2e
+```
+
+**Note:** Browser drivers are platform-specific and regenerated locally. They are not committed to the repository.
 
 ## 📚 Documentation
 
