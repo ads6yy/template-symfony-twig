@@ -10,7 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -69,6 +71,12 @@ abstract class BaseUserType extends AbstractType
             'label' => 'form.password.label',
             'constraints' => [
                 new NotBlank(message: 'validation.password.not_blank'),
+                new Length(
+                    min: 8,
+                    max: 4096,
+                    minMessage: 'validation.password.min_length'
+                ),
+                new NotCompromisedPassword(message: 'validation.password.compromised'),
             ],
             'attr' => [
                 'class' => 'form-control',

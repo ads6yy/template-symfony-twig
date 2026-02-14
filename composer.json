@@ -25,6 +25,7 @@
         "symfony/messenger": "8.0.*",
         "symfony/monolog-bundle": "^4.0.1",
         "symfony/notifier": "8.0.*",
+        "symfony/rate-limiter": "8.0.*",
         "symfony/runtime": "8.0.*",
         "symfony/security-bundle": "8.0.*",
         "symfony/translation": "8.0.*",
@@ -89,6 +90,21 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": "vendor/bin/phpunit",
+        "test:unit": "vendor/bin/phpunit --testsuite \"Project Test Suite\"",
+        "test:e2e": "vendor/bin/phpunit --testsuite e2e",
+        "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html coverage",
+        "lint": "vendor/bin/php-cs-fixer fix --dry-run --diff",
+        "lint:fix": "vendor/bin/php-cs-fixer fix",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
+        "check-duplicates": "vendor/bin/phpcpd src --verbose",
+        "security": "composer audit",
+        "qa": [
+            "@lint",
+            "@analyse",
+            "@check-duplicates",
+            "@test"
         ]
     },
     "conflict": {

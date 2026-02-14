@@ -9,4 +9,5 @@ validation:
     confirm: "Veuillez confirmer votre mot de passe."
     old_incorrect: "L'ancien mot de passe est incorrect."
     mismatch: "Les mots de passe ne correspondent pas."
+    compromised: "Ce mot de passe a été compromis lors d'une violation de données. Veuillez choisir un autre mot de passe."
 

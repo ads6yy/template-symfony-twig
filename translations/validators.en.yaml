@@ -9,4 +9,5 @@ validation:
     confirm: "Please confirm your password."
     old_incorrect: "The old password is incorrect."
     mismatch: "The passwords do not match."
+    compromised: "This password has been compromised in a data breach. Please choose a different password."
 
