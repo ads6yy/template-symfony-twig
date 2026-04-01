@@ -29,6 +29,7 @@ services:
         - '8400:80'
     depends_on:
       - mailpit
+      - rabbitmq
 
   mailpit:
     container_name: symfony-mailpit
@@ -37,5 +38,18 @@ services:
       - "8401:8025"  # Web interface
       - "1025:1025"  # SMTP server
 
+  rabbitmq:
+    container_name: symfony-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
 volumes:
   symfony-data: {}
+  rabbitmq-data: {}
