@@ -6,7 +6,7 @@ ENV \
 
 
 RUN apt-get update \
-    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor libnotify-bin
+    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor libnotify-bin librabbitmq-dev
 
 RUN  docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/ \
      && docker-php-ext-install gd \
@@ -15,7 +15,10 @@ RUN  docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/
      && docker-php-ext-enable pdo pdo_mysql opcache zip \
      && docker-php-ext-install bcmath \
      && docker-php-ext-configure intl \
-     && docker-php-ext-install intl
+     && docker-php-ext-install intl \
+     && apt-get clean && rm -rf /var/lib/apt/lists/* \
+     && pecl install amqp \
+     && docker-php-ext-enable amqp
 
 WORKDIR /srv
 
