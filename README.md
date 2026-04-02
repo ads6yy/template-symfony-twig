@@ -70,7 +70,7 @@ This project is evolving as I implement more "classic" modules. You can track th
 | **Form**                     | Form handling with validation and email notification.         | ✅ Done |
 | **Mailer**                   | Symfony Mailer integration for sending emails.                | ✅ Done |
 | **Translation System**       | Multi-language support with Symfony Translation.              | ✅ Done |
-| **Symfony Message**          | Message/Queue handling implementation.                        | ✅ Done |
+| **Symfony Message**          | Message/Queue handling implementation with RabbitMQ.          | ✅ Done |
 | **Swagger**                  | API documentation with Swagger/OpenAPI.                       | ✅ Done |
 | **QA CI**                    | Quality assurance tools (PHPStan, PHP-CS-Fixer, PHPMD, etc.). | ✅ Done |
 | **Workflow**                 | Basic Symfony Workflow implementation                         | ✅ Done |
