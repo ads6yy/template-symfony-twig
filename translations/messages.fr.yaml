@@ -7,6 +7,7 @@ auth:
     submit: Se connecter
     not_registered: Pas encore inscrit ?
     create_account: Créer un compte
+    forgot_password: Mot de passe oublié ?
   register:
     title: Inscription
     submit: Créer le compte
@@ -16,6 +17,19 @@ auth:
     title: Vérifiez votre adresse email
     help: Saisissez votre adresse email et nous vous enverrons un nouveau lien de vérification.
     submit: Renvoyer l'email de vérification
+  reset_password:
+    back_to_login: Retour à la connexion
+    request:
+      title: Réinitialiser votre mot de passe
+      help: Saisissez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+      submit: Envoyer le lien
+    check_email:
+      title: Vérifiez votre boîte mail
+      message: Si un compte correspond à votre adresse email, un lien de réinitialisation vient de lui être envoyé.
+      expiration: 'Ce lien expirera dans %duration%.'
+    reset:
+      title: Choisir un nouveau mot de passe
+      submit: Réinitialiser le mot de passe
 
 # Navigation
 nav:
@@ -127,6 +141,9 @@ flash:
     verify_email_success: Votre adresse email a été vérifiée. Vous pouvez maintenant vous connecter.
     verify_email_error: 'Le lien de vérification est invalide ou a expiré. Veuillez en demander un nouveau.'
     verify_email_already: Cette adresse email a déjà été vérifiée.
+    reset_success: Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+    reset_no_token: Aucun jeton de réinitialisation trouvé. Veuillez demander un nouveau lien.
+    reset_invalid_token: 'Le lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau.'
 
 # Messages d'erreur
 error:
@@ -158,8 +175,16 @@ email:
     button: Vérifier mon adresse email
     expiration: 'Ce lien expirera dans %duration%.'
     footer: Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email.
+  reset_password:
+    subject: Réinitialisation de votre mot de passe
+    title: Demande de réinitialisation
+    greeting: Bonjour %name%,
+    message: Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
+    button: Réinitialiser mon mot de passe
+    expiration: 'Ce lien expirera dans %duration%.'
+    footer: Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
 
-# Durées d'expiration (clés plurielles générées par symfonycasts/verify-email-bundle)
+# Durées d'expiration (clés plurielles partagées par verify-email-bundle et reset-password-bundle)
 '%count% minute|%count% minutes': '%count% minute|%count% minutes'
 '%count% hour|%count% hours': '%count% heure|%count% heures'
 '%count% day|%count% days': '%count% jour|%count% jours'
