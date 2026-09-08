@@ -27,3 +27,7 @@ services:
     App\EventSubscriber\SecurityHeadersSubscriber:
         arguments:
             $environment: '%kernel.environment%'
+
+    # Alias the concrete verify-email helper so the non-deprecated,
+    # request-based validation API is available for autowiring.
+    SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelper: '@symfonycasts.verify_email.helper'
