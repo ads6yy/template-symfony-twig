@@ -62,6 +62,8 @@ final class UserFixtures extends Fixture
             $user->setFirstName($userData['firstName']);
             $user->setLastName($userData['lastName']);
             $user->setRoles($userData['roles']);
+            // Test accounts are pre-verified so they can be used directly.
+            $user->setIsVerified(true);
 
             // Hash the password
             $hashedPassword = $this->passwordHasher->hashPassword($user, $userData['password']);

@@ -50,6 +50,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', enumType: AccountStatus::class)]
     private AccountStatus $accountStatus = AccountStatus::ACTIVE;
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
@@ -175,6 +178,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->accountStatus = is_string($accountStatus)
             ? AccountStatus::from($accountStatus)
             : $accountStatus;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
     }
 
     public function getUpdatedAt(): DateTimeImmutable

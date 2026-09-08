@@ -34,6 +34,7 @@
         "symfony/validator": "8.0.*",
         "symfony/workflow": "8.0.*",
         "symfony/yaml": "8.0.*",
+        "symfonycasts/verify-email-bundle": "^1.18",
         "systemsdk/phpcpd": "^8.2.4"
     },
     "require-dev": {

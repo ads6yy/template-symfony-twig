@@ -52,6 +52,9 @@ Emails dispatch `SendEmailMessage` to an async queue (configured in `messenger.y
 ### User Account Workflow
 State machine in `config/packages/workflow.yaml` manages `AccountStatus` enum (ACTIVE/SUSPENDED/BANNED) on the User entity. Transitions: suspend, unsuspend, ban. Used in `UserController::toggleActive()`.
 
+### Email Verification (web)
+Self-registration creates users with `User::$isVerified = false` and emails a signed verification link (`symfonycasts/verify-email-bundle`, default 1h TTL) via the async `SendEmailMessage` flow. `AuthController::verifyUserEmail()` validates the signature and flips the flag; `resendVerification()` re-sends (CSRF-protected, no user enumeration). `EmailVerificationSubscriber` redirects any authenticated-but-unverified user to the resend page for every web route (`/api` is exempt — verification is web-only). The `isVerified` flag is intentionally separate from `AccountStatus` (moderation). Fixtures are pre-verified.
+
 ### Forms
 `BaseUserType` is the abstract parent. `UserType` extends it (admin mode adds role selection). `RegistrationType` returns array data (not bound to entity). `ChangePasswordType` conditionally shows old password field (skipped for admins).
 

@@ -12,6 +12,10 @@ auth:
     submit: Create Account
     already_registered: Already have an account?
     login_link: Sign in
+  resend_verification:
+    title: Verify your email
+    help: Enter your email address and we will send you a new verification link.
+    submit: Resend verification email
 
 # Navigation
 nav:
@@ -119,6 +123,10 @@ flash:
   auth:
     email_in_use: This email is already in use.
     registration_success: Registration successful! You can now log in.
+    verify_email_sent: 'If an account matches, a verification email has been sent. Please check your inbox.'
+    verify_email_success: Your email address has been verified. You can now log in.
+    verify_email_error: 'The verification link is invalid or has expired. Please request a new one.'
+    verify_email_already: This email address has already been verified.
 
 # Error Messages
 error:
@@ -142,4 +150,12 @@ email:
     message: Thank you for registering on our platform! Your account has been successfully created and is now active.
     next_steps: You can now log in with your email address and start using all the features of our platform.
     footer: If you have any questions or need assistance, please don't hesitate to contact us.
+  email_verification:
+    subject: Please confirm your email address
+    title: Confirm your email
+    greeting: Hello %name%,
+    message: Thank you for registering! Please confirm your email address by clicking the button below.
+    button: Verify my email
+    expiration: 'This link will expire in %duration%.'
+    footer: If you did not create an account, you can safely ignore this email.
 

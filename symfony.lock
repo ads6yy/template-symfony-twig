@@ -331,5 +331,8 @@
         "files": [
             "config/packages/workflow.yaml"
         ]
+    },
+    "symfonycasts/verify-email-bundle": {
+        "version": "v1.18.0"
     }
 }
