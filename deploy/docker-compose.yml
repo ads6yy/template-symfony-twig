@@ -36,7 +36,7 @@ services:
     image: axllent/mailpit:latest
     ports:
       - "8401:8025"  # Web interface
-      - "1025:1025"  # SMTP server
+      - "1225:1025"  # SMTP server
 
   rabbitmq:
     container_name: symfony-rabbitmq

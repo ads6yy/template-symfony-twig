@@ -1,0 +1,27 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ 'auth.reset_password.check_email.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h2 class="card-title mb-4">📧 {{ 'auth.reset_password.check_email.title'|trans }}</h2>
+
+                <p>{{ 'auth.reset_password.check_email.message'|trans }}</p>
+
+                <p class="text-muted">
+                    {{ 'auth.reset_password.check_email.expiration'|trans({
+                        '%duration%': resetToken.expirationMessageKey|trans(resetToken.expirationMessageData)
+                    }) }}
+                </p>
+
+                <hr>
+
+                <a href="{{ path('app_auth_login') }}">{{ 'auth.reset_password.back_to_login'|trans }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,91 +3,94 @@
 {% block title %}{{ 'user.profile.title'|trans }} - {{ parent() }}{% endblock %}
 
 {% block body %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h2 class="mb-0">👤 {{ 'user.profile.title'|trans }}</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">👤 {{ 'user.profile.title'|trans }}</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">{{ 'user.list.email'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            <strong>{{ user.email }}</strong>
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.profile.first_name'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {{ user.firstName ?: '—' }}
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.profile.last_name'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {{ user.lastName ?: '—' }}
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.list.roles'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {% for role in user.roles %}
+                                <span class="badge bg-info">{{ role }}</span>
+                            {% endfor %}
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.list.status'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {% if user.accountStatus.isActive() %}
+                                <span class="badge bg-success">{{ 'user.status.active'|trans }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ ('user.status.' ~ user.accountStatus.value)|trans }}</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.list.created_at'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {{ user.createdAt|localized_datetime }}
+                        </dd>
+
+                        <dt class="col-sm-3">{{ 'user.profile.updated_at'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {{ user.updatedAt|localized_datetime }}
+                        </dd>
+                    </dl>
+                </div>
             </div>
-            <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">{{ 'user.list.email'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        <strong>{{ user.email }}</strong>
-                    </dd>
 
-                    <dt class="col-sm-3">{{ 'user.profile.first_name'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {{ user.firstName ?: '—' }}
-                    </dd>
+            <div class="mt-4">
+                {% if app.user.id == user.id or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning">
+                        ✏️ {{ 'user.profile.edit'|trans }}
+                    </a>
+                    <a href="{{ path('app_user_change_password', {id: user.id}) }}" class="btn btn-info">
+                        🔐 {{ 'user.profile.change_password'|trans }}
+                    </a>
+                {% endif %}
 
-                    <dt class="col-sm-3">{{ 'user.profile.last_name'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {{ user.lastName ?: '—' }}
-                    </dd>
+                {% if is_granted('ROLE_ADMIN') and app.user.id != user.id %}
+                    <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('{{ 'user.actions.confirm_delete_user'|trans }}');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ {{ 'user.profile.delete'|trans }}
+                        </button>
+                    </form>
 
-                    <dt class="col-sm-3">{{ 'user.list.roles'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {% for role in user.roles %}
-                            <span class="badge bg-info">{{ role }}</span>
-                        {% endfor %}
-                    </dd>
+                    <form method="post" action="{{ path('app_user_toggle_active', {id: user.id}) }}"
+                          style="display:inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+                        <button type="submit"
+                                class="btn {{ user.accountStatus.isActive() ? 'btn-secondary' : 'btn-success' }}">
+                            {{ user.accountStatus.isActive() ? '❌ ' ~ 'user.profile.deactivate'|trans : '✅ ' ~ 'user.profile.activate'|trans }}
+                        </button>
+                    </form>
+                {% endif %}
 
-                    <dt class="col-sm-3">{{ 'user.list.status'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {% if user.accountStatus.isActive() %}
-                            <span class="badge bg-success">{{ 'user.status.active'|trans }}</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ ('user.status.' ~ user.accountStatus.value)|trans }}</span>
-                        {% endif %}
-                    </dd>
-
-                    <dt class="col-sm-3">{{ 'user.list.created_at'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {{ user.createdAt|localized_datetime }}
-                    </dd>
-
-                    <dt class="col-sm-3">{{ 'user.profile.updated_at'|trans }}</dt>
-                    <dd class="col-sm-9">
-                        {{ user.updatedAt|localized_datetime }}
-                    </dd>
-                </dl>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                        ← {{ 'user.profile.back'|trans }}
+                    </a>
+                {% endif %}
             </div>
-        </div>
-
-        <div class="mt-4">
-            {% if app.user.id == user.id or is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning">
-                    ✏️ {{ 'user.profile.edit'|trans }}
-                </a>
-                <a href="{{ path('app_user_change_password', {id: user.id}) }}" class="btn btn-info">
-                    🔐 {{ 'user.profile.change_password'|trans }}
-                </a>
-            {% endif %}
-
-            {% if is_granted('ROLE_ADMIN') and app.user.id != user.id %}
-                <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}"
-                      style="display:inline;"
-                      onsubmit="return confirm('{{ 'user.actions.confirm_delete_user'|trans }}');">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                    <button type="submit" class="btn btn-danger">
-                        🗑️ {{ 'user.profile.delete'|trans }}
-                    </button>
-                </form>
-
-                <form method="post" action="{{ path('app_user_toggle_active', {id: user.id}) }}"
-                      style="display:inline;">
-                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
-                    <button type="submit" class="btn {{ user.accountStatus.isActive() ? 'btn-secondary' : 'btn-success' }}">
-                        {{ user.accountStatus.isActive() ? '❌ ' ~ 'user.profile.deactivate'|trans : '✅ ' ~ 'user.profile.activate'|trans }}
-                    </button>
-                </form>
-            {% endif %}
-
-            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
-                ← {{ 'user.profile.back'|trans }}
-            </a>
         </div>
     </div>
-</div>
 {% endblock %}

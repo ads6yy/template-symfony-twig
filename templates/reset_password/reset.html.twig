@@ -1,0 +1,45 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ 'auth.reset_password.reset.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">🔒 {{ 'auth.reset_password.reset.title'|trans }}</h2>
+
+                {{ form_start(resetForm) }}
+                    <div class="mb-3">
+                        {{ form_label(resetForm.newPassword) }}
+                        {{ form_widget(resetForm.newPassword) }}
+                        {% if resetForm.newPassword.vars.errors|length > 0 %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in resetForm.newPassword.vars.errors %}
+                                    {{ error.message }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(resetForm.confirmPassword) }}
+                        {{ form_widget(resetForm.confirmPassword) }}
+                        {% if resetForm.confirmPassword.vars.errors|length > 0 %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in resetForm.confirmPassword.vars.errors %}
+                                    {{ error.message }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        {{ 'auth.reset_password.reset.submit'|trans }}
+                    </button>
+                {{ form_end(resetForm) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

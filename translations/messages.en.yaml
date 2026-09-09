@@ -7,6 +7,7 @@ auth:
     submit: Sign In
     not_registered: Not registered yet?
     create_account: Create an account
+    forgot_password: Forgot your password?
   register:
     title: Register
     submit: Create Account
@@ -16,6 +17,19 @@ auth:
     title: Verify your email
     help: Enter your email address and we will send you a new verification link.
     submit: Resend verification email
+  reset_password:
+    back_to_login: Back to login
+    request:
+      title: Reset your password
+      help: Enter your email address and we will send you a link to reset your password.
+      submit: Send reset link
+    check_email:
+      title: Check your email
+      message: If an account matches your email, a password reset link has just been sent to it.
+      expiration: 'This link will expire in %duration%.'
+    reset:
+      title: Choose a new password
+      submit: Reset password
 
 # Navigation
 nav:
@@ -127,6 +141,9 @@ flash:
     verify_email_success: Your email address has been verified. You can now log in.
     verify_email_error: 'The verification link is invalid or has expired. Please request a new one.'
     verify_email_already: This email address has already been verified.
+    reset_success: Your password has been reset. You can now log in with your new password.
+    reset_no_token: No reset password token found. Please request a new link.
+    reset_invalid_token: 'The reset link is invalid or has expired. Please request a new one.'
 
 # Error Messages
 error:
@@ -158,4 +175,12 @@ email:
     button: Verify my email
     expiration: 'This link will expire in %duration%.'
     footer: If you did not create an account, you can safely ignore this email.
+  reset_password:
+    subject: Reset your password
+    title: Password Reset Request
+    greeting: Hello %name%,
+    message: You requested to reset your password. Click the button below to choose a new one.
+    button: Reset my password
+    expiration: 'This link will expire in %duration%.'
+    footer: If you did not request a password reset, you can safely ignore this email.
 

@@ -55,6 +55,9 @@ State machine in `config/packages/workflow.yaml` manages `AccountStatus` enum (A
 ### Email Verification (web)
 Self-registration creates users with `User::$isVerified = false` and emails a signed verification link (`symfonycasts/verify-email-bundle`, default 1h TTL) via the async `SendEmailMessage` flow. `AuthController::verifyUserEmail()` validates the signature and flips the flag; `resendVerification()` re-sends (CSRF-protected, no user enumeration). `EmailVerificationSubscriber` redirects any authenticated-but-unverified user to the resend page for every web route (`/api` is exempt — verification is web-only). The `isVerified` flag is intentionally separate from `AccountStatus` (moderation). Fixtures are pre-verified.
 
+### Password Reset (web)
+`ResetPasswordController` (`symfonycasts/reset-password-bundle`) drives the flow: request form → signed token stored in `ResetPasswordRequest` (dedicated entity/table) → reset email (async `SendEmailMessage`, default 1h TTL) → new-password form (reuses `ChangePasswordType` with `require_old_password: false`). Tokens are single-use (`removeResetRequest`) and the request/check-email pages never reveal whether an account exists (no enumeration). The concrete `ResetPasswordHelper` is aliased in `services.yaml` for `generateFakeResetToken()`.
+
 ### Forms
 `BaseUserType` is the abstract parent. `UserType` extends it (admin mode adds role selection). `RegistrationType` returns array data (not bound to entity). `ChangePasswordType` conditionally shows old password field (skipped for admins).
 
