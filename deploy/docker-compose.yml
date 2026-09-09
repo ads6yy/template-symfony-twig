@@ -22,9 +22,16 @@ services:
       target: client_php
     volumes:
       - ../:/srv
+      # Mask the host drivers/ dir: it may hold a macOS chromedriver that cannot run in Linux
+      - /srv/drivers
       - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./php/php.ini:/usr/local/etc/php/conf.d/000-php.ini
       - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+    environment:
+      # Panther E2E: use the Linux Chromium + driver installed in the image
+      PANTHER_NO_SANDBOX: '1'
+      PANTHER_CHROME_BINARY: /usr/bin/chromium
+      PANTHER_CHROME_DRIVER_BINARY: /usr/bin/chromedriver
     ports:
         - '8400:80'
     depends_on:

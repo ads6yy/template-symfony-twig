@@ -86,6 +86,7 @@ abstract class PantherTestCase extends BasePantherTestCase
         $client->findElement(WebDriverBy::id('password'))->sendKeys($password);
         $client->findElement(WebDriverBy::cssSelector('button[type="submit"]'))->click();
 
-        $client->waitFor('.navbar');
+        // Wait for the authenticated state, not just the navbar (present on every page).
+        $client->waitForElementToContain('.navbar', 'Logout');
     }
 }

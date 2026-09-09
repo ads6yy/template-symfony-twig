@@ -28,7 +28,8 @@ final class AuthenticationE2ETest extends PantherTestCase
         $client->findElement(WebDriverBy::id('password'))->sendKeys('Test123!');
         $client->findElement(WebDriverBy::cssSelector('button[type="submit"]'))->click();
 
-        $client->waitFor('.navbar');
+        // Wait for the authenticated state, not just the navbar (present on every page).
+        $client->waitForElementToContain('.navbar', 'Logout');
 
         $navbarText = $client->findElement(WebDriverBy::cssSelector('.navbar'))->getText();
         $this->assertStringContainsString('Admin System', $navbarText);
