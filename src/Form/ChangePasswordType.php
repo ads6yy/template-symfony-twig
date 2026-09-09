@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -54,6 +55,7 @@ final class ChangePasswordType extends AbstractType
                         max: 4096,
                         minMessage: 'validation.password.min_length'
                     ),
+                    new NotCompromisedPassword(message: 'validation.password.compromised'),
                 ],
                 'attr' => [
                     'class' => 'form-control',
@@ -68,6 +70,7 @@ final class ChangePasswordType extends AbstractType
                     new NotBlank(
                         message: 'validation.password.confirm'
                     ),
+                    new NotCompromisedPassword(message: 'validation.password.compromised'),
                 ],
                 'attr' => [
                     'class' => 'form-control',
