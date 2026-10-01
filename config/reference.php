@@ -730,6 +730,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|Param|null, // Default: true
+ *     timezone?: string|Param, // The timezone used for the timestamp of every log record (e.g. "UTC" or "Europe/Paris"). Defaults to the PHP default timezone. // Default: null
  *     channels?: list<scalar|Param|null>,
  *     handlers?: array<string, array{ // Default: []
  *         type?: scalar|Param|null,
@@ -741,6 +742,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         interactive_only?: bool|Param, // Default: false
  *         app_name?: scalar|Param|null, // Default: null
  *         include_stacktraces?: bool|Param, // Default: false
+ *         base_path?: scalar|Param|null, // Default: null
  *         process_psr_3_messages?: array{
  *             enabled?: bool|Param|null, // Default: null
  *             date_format?: scalar|Param|null,
@@ -751,7 +753,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         use_locking?: bool|Param, // Default: false
  *         filename_format?: scalar|Param|null, // Default: "{filename}-{date}"
  *         date_format?: scalar|Param|null, // Default: "Y-m-d"
- *         ident?: scalar|Param|null, // Default: false
+ *         ident?: scalar|Param|null, // Default: "php"
  *         logopts?: scalar|Param|null, // Default: 1
  *         facility?: scalar|Param|null, // Default: "user"
  *         max_files?: scalar|Param|null, // Default: 0
@@ -788,6 +790,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         title?: scalar|Param|null, // Default: null
  *         host?: scalar|Param|null, // Default: null
  *         port?: scalar|Param|null, // Default: 514
+ *         rfc?: scalar|Param|null, // Default: 1
  *         config?: list<scalar|Param|null>,
  *         members?: list<scalar|Param|null>,
  *         connection_string?: scalar|Param|null,
@@ -798,6 +801,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         connection_timeout?: scalar|Param|null,
  *         persistent?: bool|Param,
  *         message_type?: scalar|Param|null, // Default: 0
+ *         expand_newlines?: bool|Param, // Default: false
  *         parse_mode?: scalar|Param|null, // Default: null
  *         disable_webpage_preview?: bool|Param|null, // Default: null
  *         disable_notification?: bool|Param|null, // Default: null
@@ -844,7 +848,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             database?: scalar|Param|null, // Default: 0
  *             key_name?: scalar|Param|null, // Default: "monolog_redis"
  *         },
- *         predis?: Param|string|array{
+ *         predis?: Param|string|array{ // Deprecated: The "predis" option is deprecated and ignored, use the "redis" option to configure the Predis client.
  *             id?: scalar|Param|null,
  *             host?: scalar|Param|null,
  *         },
@@ -853,6 +857,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         subject?: scalar|Param|null,
  *         content_type?: scalar|Param|null, // Default: null
  *         headers?: list<scalar|Param|null>,
+ *         parameters?: list<scalar|Param|null>,
  *         mailer?: scalar|Param|null, // Default: null
  *         email_prototype?: Param|string|array{
  *             id?: scalar|Param|null,
@@ -897,7 +902,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             servicename?: scalar|Param|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
  *             sessionMode?: scalar|Param|null, // The session mode to use for the oci8 driver
  *             server?: scalar|Param|null, // The name of a running database server to connect to for SQL Anywhere.
- *             default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *             default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connection.
  *             sslmode?: scalar|Param|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
  *             sslrootcert?: scalar|Param|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
  *             sslcert?: scalar|Param|null, // The path to the SSL client certificate file for PostgreSQL.
@@ -943,7 +948,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 servicename?: scalar|Param|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
  *                 sessionMode?: scalar|Param|null, // The session mode to use for the oci8 driver
  *                 server?: scalar|Param|null, // The name of a running database server to connect to for SQL Anywhere.
- *                 default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *                 default_dbname?: scalar|Param|null, // Override the default database (postgres) to connect to for PostgreSQL connection.
  *                 sslmode?: scalar|Param|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
  *                 sslrootcert?: scalar|Param|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
  *                 sslcert?: scalar|Param|null, // The path to the SSL client certificate file for PostgreSQL.
@@ -1022,7 +1027,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                     lock_path?: scalar|Param|null, // Default: "%kernel.cache_dir%/doctrine/orm/slc/filelock"
  *                     lock_lifetime?: scalar|Param|null, // Default: 60
  *                     type?: scalar|Param|null, // Default: "default"
- *                     lifetime?: scalar|Param|null, // Default: 0
+ *                     lifetime?: scalar|Param|null, // Default: null
  *                     service?: scalar|Param|null,
  *                     name?: scalar|Param|null,
  *                 }>,
@@ -1401,6 +1406,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         assets_mode?: scalar|Param|null, // Default: "cdn"
  *         swagger_ui_config?: array<mixed>,
  *         redocly_config?: array<mixed>,
+ *         scalar_config?: array<mixed>,
  *         stoplight_config?: array<mixed>,
  *     },
  *     areas?: array<string, array{ // Default: {"default":{"path_patterns":[],"host_patterns":[],"with_attribute":false,"documentation":[],"name_patterns":[],"disable_default_routes":false,"cache":[],"security":[]}}
