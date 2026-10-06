@@ -18,6 +18,39 @@ way. It is designed to act as a code bank or knowledge base that I can refer to 
 * **Language:** PHP 8.4+
 * **Environment:** Docker
 
+## 🏗️ Architecture
+
+Services run with Docker Compose (`deploy/docker-compose.yml`). Keep this diagram up to date when a service or flow is
+added.
+
+```mermaid
+flowchart LR
+    users(["Users<br/>browser and API clients"])
+
+    subgraph app["Application"]
+        web["Symfony app<br/>web + REST API"]
+        worker["Async workers"]
+        cron["SBOM cron"]
+    end
+
+    subgraph infra["Infrastructure"]
+        db[("MariaDB")]
+        queue[["RabbitMQ"]]
+        mail["Mailpit<br/>SMTP"]
+    end
+
+    subgraph sca["Dependency analysis"]
+        dt["Dependency-Track"]
+        dtdb[("PostgreSQL")]
+    end
+
+    users --> web
+    users --> dt
+    web --> db
+    web -->|emails| queue --> worker --> mail
+    cron -->|SBOM| dt --> dtdb
+```
+
 ## 🚀 Quick Start
 
 ```bash
