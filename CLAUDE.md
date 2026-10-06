@@ -29,8 +29,13 @@ php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load
 
 # Docker
-docker-compose -f deploy/docker-compose.yml up -d   # MariaDB:3400, App:8400, Mailpit:8401
+docker-compose -f deploy/docker-compose.yml up -d   # MariaDB:3400, App:8400, Mailpit:8401, RabbitMQ UI:8402, Dependency-Track UI:8403 / API:8404
 ```
+
+Dependency-Track v5 (`dtrack-*` services, PostgreSQL 18) requires `DTRACK_DB_PASSWORD` in `deploy/.env`; `DTRACK_API_BASE_URL` (default `http://localhost:8404`) is the API URL as seen from the browser.
+
+### SBOM upload to Dependency-Track
+`deploy/php/sbom-upload.sh` builds a CycloneDX 1.6 JSON SBOM of the Composer dependencies (dev excluded) with the `cyclonedx/cyclonedx-php-composer` plugin, then POSTs it to `/api/v1/bom` with `autoCreate=true`. It runs daily at 03:00 via cron in the php container (`deploy/php/sbom-upload.cron`, copied into the image; `cron` is started by supervisor, which first dumps the `DTRACK_*`/`COMPOSER_*` variables to `/etc/sbom-upload.env` since cron does not inherit the container environment). Logs: `/var/log/supervisor/sbom-upload.log`. Requires `DTRACK_API_KEY` in `deploy/.env` (team with `BOM_UPLOAD` + `PROJECT_CREATION_UPLOAD`); `DTRACK_API_URL`, `DTRACK_PROJECT_NAME`, `DTRACK_PROJECT_VERSION` default to `http://dtrack-apiserver:8080`, `symfony-twig`, `main`. Manual run: `docker exec symfony-php-apache /srv/deploy/php/sbom-upload.sh`.
 
 ## Architecture
 
@@ -43,8 +48,8 @@ docker-compose -f deploy/docker-compose.yml up -d   # MariaDB:3400, App:8400, Ma
 All web routes are prefixed with `/{_locale}` (en|fr). API routes under `/api` have no locale prefix. Root `/` redirects to `/en`. The `LocaleSubscriber` syncs locale between URL and session.
 
 ### Controller Separation
-- `src/Controller/` — Web controllers (locale-prefixed routes)
-- `src/Api/Controller/` — REST API controllers (no locale prefix, JSON responses)
+- `src/Controller/`: Web controllers (locale-prefixed routes)
+- `src/Api/Controller/`: REST API controllers (no locale prefix, JSON responses)
 
 ### Async Email via Messenger
 Emails dispatch `SendEmailMessage` to an async queue (configured in `messenger.yaml`). Handler in `src/MessageHandler/SendEmailMessageHandler.php` sends via Symfony Mailer. Transport: Doctrine in dev, configurable via `MESSENGER_TRANSPORT_DSN`.
@@ -53,7 +58,7 @@ Emails dispatch `SendEmailMessage` to an async queue (configured in `messenger.y
 State machine in `config/packages/workflow.yaml` manages `AccountStatus` enum (ACTIVE/SUSPENDED/BANNED) on the User entity. Transitions: suspend, unsuspend, ban. Used in `UserController::toggleActive()`.
 
 ### Email Verification (web)
-Self-registration creates users with `User::$isVerified = false` and emails a signed verification link (`symfonycasts/verify-email-bundle`, default 1h TTL) via the async `SendEmailMessage` flow. `AuthController::verifyUserEmail()` validates the signature and flips the flag; `resendVerification()` re-sends (CSRF-protected, no user enumeration). `EmailVerificationSubscriber` redirects any authenticated-but-unverified user to the resend page for every web route (`/api` is exempt — verification is web-only). The `isVerified` flag is intentionally separate from `AccountStatus` (moderation). Fixtures are pre-verified.
+Self-registration creates users with `User::$isVerified = false` and emails a signed verification link (`symfonycasts/verify-email-bundle`, default 1h TTL) via the async `SendEmailMessage` flow. `AuthController::verifyUserEmail()` validates the signature and flips the flag; `resendVerification()` re-sends (CSRF-protected, no user enumeration). `EmailVerificationSubscriber` redirects any authenticated-but-unverified user to the resend page for every web route (`/api` is exempt: verification is web-only). The `isVerified` flag is intentionally separate from `AccountStatus` (moderation). Fixtures are pre-verified.
 
 ### Password Reset (web)
 `ResetPasswordController` (`symfonycasts/reset-password-bundle`) drives the flow: request form → signed token stored in `ResetPasswordRequest` (dedicated entity/table) → reset email (async `SendEmailMessage`, default 1h TTL) → new-password form (reuses `ChangePasswordType` with `require_old_password: false`). Tokens are single-use (`removeResetRequest`) and the request/check-email pages never reveal whether an account exists (no enumeration). The concrete `ResetPasswordHelper` is aliased in `services.yaml` for `generateFakeResetToken()`.

@@ -43,6 +43,7 @@
         "systemsdk/phpcpd": "^8.3.0"
     },
     "require-dev": {
+        "cyclonedx/cyclonedx-php-composer": "^6.2",
         "dbrekelmans/bdi": "^1.4",
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
         "friendsofphp/php-cs-fixer": "^3.95.27",
@@ -61,7 +62,8 @@
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "cyclonedx/cyclonedx-php-composer": true
         },
         "bump-after-update": true,
         "sort-packages": true

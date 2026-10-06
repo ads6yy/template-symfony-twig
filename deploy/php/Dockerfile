@@ -6,7 +6,7 @@ ENV \
 
 
 RUN apt-get update \
-    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor libnotify-bin librabbitmq-dev \
+    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev wget git libzip-dev unzip python-is-python3 sudo default-mysql-client libwebp-dev libicu-dev supervisor libnotify-bin librabbitmq-dev cron \
     # Chromium + matching driver for Panther E2E tests (Debian keeps both in sync)
     chromium chromium-driver
 
@@ -30,5 +30,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN if [ -n "$NON_PROD" ] ; then printf "User-agent: *\nDisallow: /\nNoindex: /\n" > ./web/robots.txt; fi
 
 RUN a2enmod rewrite
+
+# Daily SBOM upload to Dependency-Track
+COPY sbom-upload.cron /etc/cron.d/sbom-upload
+RUN chmod 0644 /etc/cron.d/sbom-upload
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

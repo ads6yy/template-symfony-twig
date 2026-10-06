@@ -32,6 +32,11 @@ services:
       PANTHER_NO_SANDBOX: '1'
       PANTHER_CHROME_BINARY: /usr/bin/chromium
       PANTHER_CHROME_DRIVER_BINARY: /usr/bin/chromedriver
+      # SBOM upload to Dependency-Track (deploy/php/sbom-upload.sh, daily cron)
+      DTRACK_API_URL: ${DTRACK_API_URL:-http://dtrack-apiserver:8080}
+      DTRACK_API_KEY: ${DTRACK_API_KEY:-}
+      DTRACK_PROJECT_NAME: ${DTRACK_PROJECT_NAME:-symfony-twig}
+      DTRACK_PROJECT_VERSION: ${DTRACK_PROJECT_VERSION:-main}
     ports:
         - '8400:80'
     depends_on:
@@ -57,6 +62,56 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
+  dtrack-postgres:
+    container_name: symfony-dtrack-postgres
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: dtrack
+      POSTGRES_USER: dtrack
+      POSTGRES_PASSWORD: ${DTRACK_DB_PASSWORD:?Set DTRACK_DB_PASSWORD in deploy/.env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - dtrack-postgres-data:/var/lib/postgresql
+    restart: unless-stopped
+
+  dtrack-apiserver:
+    container_name: symfony-dtrack-apiserver
+    image: ghcr.io/dependencytrack/apiserver:5.1.2
+    depends_on:
+      dtrack-postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    environment:
+      DT_DATASOURCE_URL: jdbc:postgresql://dtrack-postgres:5432/dtrack
+      DT_DATASOURCE_USERNAME: dtrack
+      DT_DATASOURCE_PASSWORD: ${DTRACK_DB_PASSWORD:?Set DTRACK_DB_PASSWORD in deploy/.env}
+    ports:
+      - "8404:8080"
+    volumes:
+      - dtrack-apiserver-data:/data
+    restart: unless-stopped
+
+  dtrack-frontend:
+    container_name: symfony-dtrack-frontend
+    image: ghcr.io/dependencytrack/frontend:5.1.2
+    environment:
+      # URL of the API as seen from the browser
+      API_BASE_URL: ${DTRACK_API_BASE_URL:-http://localhost:8404}
+    ports:
+      - "8403:8080"
+    depends_on:
+      - dtrack-apiserver
+    restart: unless-stopped
+
 volumes:
   symfony-data: {}
   rabbitmq-data: {}
+  dtrack-postgres-data: {}
+  dtrack-apiserver-data: {}

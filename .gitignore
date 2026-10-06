@@ -11,6 +11,8 @@
 
 /.idea/*
 /deploy/docker-compose.override.yml
+# Docker Compose secrets: copy deploy/.env.example to deploy/.env
+/deploy/.env
 
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.cache

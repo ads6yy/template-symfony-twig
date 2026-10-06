@@ -1,0 +1,7 @@
+# Daily SBOM upload to Dependency-Track (03:00, container time).
+# Cron does not pass the container environment to jobs: the DTRACK_* and COMPOSER_* variables
+# are dumped to /etc/sbom-upload.env by the supervisor "cron" program before cron starts.
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+0 3 * * * root . /etc/sbom-upload.env && /srv/deploy/php/sbom-upload.sh >> /var/log/supervisor/sbom-upload.log 2>&1
