@@ -82,7 +82,7 @@ This project is evolving as I implement more "classic" modules. You can track th
 | **Health Check Endpoint**    | System health monitoring endpoint.                            | ✅ Done |
 | **Email Verification**       | Email verification on user registration.                      | ⏳ Todo |
 | **Password Reset**           | Password reset functionality via email.                       | ⏳ Todo |
-| **Two-Factor Auth (2FA)**    | 2FA implementation (TOTP/SMS).                                | ⏳ Todo |
+| **Two-Factor Auth (2FA)**    | TOTP 2FA (QR code setup, backup codes, admin reset).          | ✅ Done |
 | **API Versioning**           | API versioning and pagination support.                        | ⏳ Todo |
 | **Application Monitoring**   | Integration with Sentry or New Relic.                         | ⏳ Todo |
 | **Performance Optimization** | Redis caching, OPcache configuration.                         | ⏳ Todo |

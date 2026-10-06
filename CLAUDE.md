@@ -58,6 +58,9 @@ Self-registration creates users with `User::$isVerified = false` and emails a si
 ### Password Reset (web)
 `ResetPasswordController` (`symfonycasts/reset-password-bundle`) drives the flow: request form → signed token stored in `ResetPasswordRequest` (dedicated entity/table) → reset email (async `SendEmailMessage`, default 1h TTL) → new-password form (reuses `ChangePasswordType` with `require_old_password: false`). Tokens are single-use (`removeResetRequest`) and the request/check-email pages never reveal whether an account exists (no enumeration). The concrete `ResetPasswordHelper` is aliased in `services.yaml` for `generateFakeResetToken()`.
 
+### Two-Factor Authentication (web)
+TOTP via `scheb/2fa-bundle` (`scheb/2fa-totp` + `scheb/2fa-backup-code`), configured on the `main` firewall only (`/api` is exempt). `User` implements `TwoFactorInterface` and `BackupCodeInterface`: a non-null `totpSecret` means 2FA is enabled; `backupCodes` holds SHA-256 hashes of 10 single-use codes (both fields are stripped from the serialized session user). `TwoFactorController` (`/users/{id}/two-factor/...`) handles enable (pending seed kept in session, QR code rendered as SVG data URI by `endroid/qr-code`, confirmed by a valid code), one-time display/download of backup codes, disable (owner only) and admin reset (recovery when device and codes are lost). The login challenge is the bundle's form at `/{_locale}/auth/2fa` (template `auth/2fa_form.html.twig`), accepting a TOTP or a backup code; invalid codes count towards `login_throttling`. Tests freeze time by replacing the `clock` service with a `MockClock`.
+
 ### Forms
 `BaseUserType` is the abstract parent. `UserType` extends it (admin mode adds role selection). `RegistrationType` returns array data (not bound to entity). `ChangePasswordType` conditionally shows old password field (skipped for admins).
 

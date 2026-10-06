@@ -1,0 +1,32 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ 'two_factor.backup_codes.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">🗝️ {{ 'two_factor.backup_codes.title'|trans }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">{{ 'two_factor.backup_codes.warning'|trans }}</div>
+
+                <ul class="list-unstyled row font-monospace fs-5" id="backup-codes">
+                    {% for code in backup_codes %}
+                        <li class="col-6 mb-2">{{ code }}</li>
+                    {% endfor %}
+                </ul>
+
+                <a href="data:text/plain;charset=utf-8,{{ backup_codes|join("\n")|url_encode }}"
+                   download="backup-codes.txt" class="btn btn-success" id="download-backup-codes">
+                    ⬇️ {{ 'two_factor.backup_codes.download'|trans }}
+                </a>
+                <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-secondary">
+                    {{ 'two_factor.backup_codes.done'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

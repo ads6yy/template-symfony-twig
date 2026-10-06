@@ -30,6 +30,13 @@ auth:
     reset:
       title: Choose a new password
       submit: Reset password
+  two_factor:
+    title: Two-factor authentication
+    help: Open your authenticator app and enter the 6-digit code.
+    code: Authentication code
+    backup_code_hint: 'Lost your device? Enter one of your backup codes instead.'
+    submit: Verify
+    cancel: Cancel and log out
 
 # Navigation
 nav:
@@ -63,6 +70,16 @@ user:
     activate: Activate
     back: Back to List
     updated_at: Updated At
+    two_factor:
+      label: Two-factor authentication
+      enabled: Enabled
+      disabled: Disabled
+      backup_codes_left: '(%count% backup codes left)'
+      enable: Enable two-factor authentication
+      disable: Disable two-factor authentication
+      confirm_disable: Are you sure you want to disable two-factor authentication?
+      reset: Reset two-factor authentication
+      confirm_reset: 'Reset two-factor authentication for this user? They will be able to log in with their password only.'
   status:
     active: Active
     suspended: Suspended
@@ -124,6 +141,24 @@ form:
 footer:
   copyright: All rights reserved.
 
+# Two-factor authentication
+two_factor:
+  enable:
+    title: Enable two-factor authentication
+    step_scan: '1. Scan this QR code with an authenticator app (Google Authenticator, Authy, ...).'
+    qr_code_alt: QR code for your authenticator app
+    manual_entry: 'Cannot scan the code? Enter this key manually:'
+    step_confirm: '2. Enter the 6-digit code displayed by the app to confirm the setup.'
+    code: Authentication code
+    invalid_code: The code is invalid. Please try again with the current code from your app.
+    submit: Enable
+    cancel: Cancel
+  backup_codes:
+    title: Your backup codes
+    warning: 'Save these codes somewhere safe. Each code can be used once to log in if you lose access to your authenticator app. They will not be shown again.'
+    download: Download codes
+    done: I have saved my codes
+
 # Flash Messages
 flash:
   user:
@@ -144,6 +179,11 @@ flash:
     reset_success: Your password has been reset. You can now log in with your new password.
     reset_no_token: No reset password token found. Please request a new link.
     reset_invalid_token: 'The reset link is invalid or has expired. Please request a new one.'
+  two_factor:
+    enabled: Two-factor authentication is now enabled.
+    already_enabled: Two-factor authentication is already enabled.
+    disabled: Two-factor authentication has been disabled.
+    reset: Two-factor authentication has been reset for this user.
 
 # Error Messages
 error:
@@ -151,6 +191,7 @@ error:
     view_profile: You can only view your own profile.
     edit_profile: You can only edit your own profile.
     change_password: You can only change your own password.
+    two_factor: You can only manage two-factor authentication for your own account.
 
 # Email Messages
 email:

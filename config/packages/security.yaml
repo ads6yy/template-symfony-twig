@@ -41,6 +41,12 @@ security:
                 username_parameter: _username
                 password_parameter: _password
                 success_handler: App\Security\AuthenticationSuccessHandler
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
+                enable_csrf: true
+                # Same redirection as a password-only login once the second factor is validated
+                success_handler: App\Security\AuthenticationSuccessHandler
             login_throttling:
                 max_attempts: 5
                 interval: '15 minutes'
@@ -56,12 +62,14 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
+        - { path: ^/(en|fr)/auth/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/(en|fr)/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/(en|fr)/auth/register, roles: PUBLIC_ACCESS }
         - { path: ^/(en|fr)/users$, roles: ROLE_ADMIN }
         - { path: ^/(en|fr)/users/new, roles: ROLE_ADMIN }
         - { path: ^/(en|fr)/users/.+/delete, roles: ROLE_ADMIN }
         - { path: ^/(en|fr)/users/.+/toggle-active, roles: ROLE_ADMIN }
+        - { path: ^/(en|fr)/users/.+/two-factor/reset, roles: ROLE_ADMIN }
         - { path: ^/(en|fr)/users, roles: ROLE_USER }
         - { path: ^/, roles: PUBLIC_ACCESS }
 

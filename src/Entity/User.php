@@ -9,12 +9,16 @@ use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
+use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -52,6 +56,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    /**
+     * TOTP secret (base32). Null means two-factor authentication is disabled.
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $totpSecret = null;
+
+    /**
+     * @var list<string>|null SHA-256 hashes of the remaining single-use backup codes
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $backupCodes = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
@@ -204,6 +220,86 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return $this->totpSecret !== null;
+    }
+
+    public function getTotpAuthenticationUsername(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
+    {
+        if ($this->totpSecret === null) {
+            return null;
+        }
+
+        // SHA1 / 30s / 6 digits: the settings supported by all common authenticator apps.
+        return new TotpConfiguration($this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+    }
+
+    public function setTotpSecret(?string $totpSecret): static
+    {
+        $this->totpSecret = $totpSecret;
+
+        return $this;
+    }
+
+    /**
+     * @param list<string> $plainCodes
+     */
+    public function setBackupCodes(array $plainCodes): static
+    {
+        $this->backupCodes = array_map(self::hashBackupCode(...), $plainCodes);
+
+        return $this;
+    }
+
+    public function countBackupCodes(): int
+    {
+        return count($this->backupCodes ?? []);
+    }
+
+    public function disableTwoFactor(): static
+    {
+        $this->totpSecret = null;
+        $this->backupCodes = null;
+
+        return $this;
+    }
+
+    public function isBackupCode(string $code): bool
+    {
+        $hash = self::hashBackupCode($code);
+        foreach ($this->backupCodes ?? [] as $storedHash) {
+            if (hash_equals($storedHash, $hash)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function invalidateBackupCode(string $code): void
+    {
+        $hash = self::hashBackupCode($code);
+        $this->backupCodes = array_values(array_filter(
+            $this->backupCodes ?? [],
+            static fn (string $storedHash): bool => !hash_equals($storedHash, $hash),
+        ));
+    }
+
+    /**
+     * Backup codes are high-entropy random strings, so a fast hash is enough
+     * to avoid storing them in clear text.
+     */
+    private static function hashBackupCode(string $code): string
+    {
+        return hash('sha256', strtolower(trim($code)));
+    }
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
@@ -213,6 +309,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->password !== null) {
             $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
         }
+        // Two-factor secrets never need to live in the session: the user is refreshed from the database.
+        $data["\0".self::class."\0totpSecret"] = null;
+        $data["\0".self::class."\0backupCodes"] = null;
 
         return $data;
     }

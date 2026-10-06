@@ -1,0 +1,53 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ 'auth.two_factor.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">🔑 {{ 'auth.two_factor.title'|trans }}</h2>
+
+                {% if authenticationError %}
+                    <div class="alert alert-danger">
+                        {{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}
+                    </div>
+                {% endif %}
+
+                <p class="text-muted">{{ 'auth.two_factor.help'|trans }}</p>
+
+                <form method="post" action="{{ checkPathUrl ? checkPathUrl : path(checkPathRoute) }}">
+                    <div class="mb-3">
+                        <label for="_auth_code" class="form-label">{{ 'auth.two_factor.code'|trans }}</label>
+                        <input
+                            type="text"
+                            id="_auth_code"
+                            name="{{ authCodeParameterName }}"
+                            class="form-control"
+                            autocomplete="one-time-code"
+                            required
+                            autofocus
+                        >
+                        <div class="form-text">{{ 'auth.two_factor.backup_code_hint'|trans }}</div>
+                    </div>
+
+                    {% if isCsrfProtectionEnabled %}
+                        <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        {{ 'auth.two_factor.submit'|trans }}
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    <a href="{{ logoutPath }}">{{ 'auth.two_factor.cancel'|trans }}</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

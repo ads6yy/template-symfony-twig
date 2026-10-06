@@ -1,0 +1,48 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ 'two_factor.enable.title'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">🔑 {{ 'two_factor.enable.title'|trans }}</h2>
+            </div>
+            <div class="card-body">
+                <p>{{ 'two_factor.enable.step_scan'|trans }}</p>
+
+                <div class="text-center mb-3">
+                    <img src="{{ qr_code_data_uri }}" alt="{{ 'two_factor.enable.qr_code_alt'|trans }}" width="250" height="250">
+                </div>
+
+                <p class="text-muted">
+                    {{ 'two_factor.enable.manual_entry'|trans }}
+                    <code class="user-select-all">{{ manual_entry_code }}</code>
+                </p>
+
+                <hr>
+
+                <p>{{ 'two_factor.enable.step_confirm'|trans }}</p>
+
+                {% if invalid_code %}
+                    <div class="alert alert-danger">{{ 'two_factor.enable.invalid_code'|trans }}</div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_two_factor_enable', {id: user.id}) }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('two_factor_enable') }}">
+
+                    <div class="mb-3">
+                        <label for="code" class="form-label">{{ 'two_factor.enable.code'|trans }}</label>
+                        <input type="text" id="code" name="code" class="form-control"
+                               inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" required autofocus>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">{{ 'two_factor.enable.submit'|trans }}</button>
+                    <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-secondary">{{ 'two_factor.enable.cancel'|trans }}</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

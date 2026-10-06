@@ -30,6 +30,13 @@ auth:
     reset:
       title: Choisir un nouveau mot de passe
       submit: Réinitialiser le mot de passe
+  two_factor:
+    title: Authentification à deux facteurs
+    help: Ouvrez votre application d'authentification et saisissez le code à 6 chiffres.
+    code: Code d'authentification
+    backup_code_hint: 'Appareil perdu ? Saisissez plutôt l''un de vos codes de secours.'
+    submit: Vérifier
+    cancel: Annuler et se déconnecter
 
 # Navigation
 nav:
@@ -63,6 +70,16 @@ user:
     activate: Activer
     back: Retour à la liste
     updated_at: Mis à jour le
+    two_factor:
+      label: Authentification à deux facteurs
+      enabled: Activée
+      disabled: Désactivée
+      backup_codes_left: '(%count% codes de secours restants)'
+      enable: Activer l'authentification à deux facteurs
+      disable: Désactiver l'authentification à deux facteurs
+      confirm_disable: Voulez-vous vraiment désactiver l'authentification à deux facteurs ?
+      reset: Réinitialiser l'authentification à deux facteurs
+      confirm_reset: 'Réinitialiser l''authentification à deux facteurs de cet utilisateur ? Il pourra se connecter avec son seul mot de passe.'
   status:
     active: Actif
     suspended: Suspendu
@@ -124,6 +141,24 @@ form:
 footer:
   copyright: Tous droits réservés.
 
+# Authentification à deux facteurs
+two_factor:
+  enable:
+    title: Activer l'authentification à deux facteurs
+    step_scan: '1. Scannez ce QR code avec une application d''authentification (Google Authenticator, Authy...).'
+    qr_code_alt: QR code pour votre application d'authentification
+    manual_entry: 'Impossible de scanner le code ? Saisissez cette clé manuellement :'
+    step_confirm: '2. Saisissez le code à 6 chiffres affiché par l''application pour confirmer la configuration.'
+    code: Code d'authentification
+    invalid_code: Le code est invalide. Réessayez avec le code actuel de votre application.
+    submit: Activer
+    cancel: Annuler
+  backup_codes:
+    title: Vos codes de secours
+    warning: 'Conservez ces codes en lieu sûr. Chaque code permet de se connecter une seule fois si vous perdez l''accès à votre application d''authentification. Ils ne seront plus affichés.'
+    download: Télécharger les codes
+    done: J'ai sauvegardé mes codes
+
 # Messages flash
 flash:
   user:
@@ -144,6 +179,11 @@ flash:
     reset_success: Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
     reset_no_token: Aucun jeton de réinitialisation trouvé. Veuillez demander un nouveau lien.
     reset_invalid_token: 'Le lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau.'
+  two_factor:
+    enabled: L'authentification à deux facteurs est maintenant activée.
+    already_enabled: L'authentification à deux facteurs est déjà activée.
+    disabled: L'authentification à deux facteurs a été désactivée.
+    reset: L'authentification à deux facteurs de cet utilisateur a été réinitialisée.
 
 # Messages d'erreur
 error:
@@ -151,6 +191,7 @@ error:
     view_profile: Vous ne pouvez voir que votre propre profil.
     edit_profile: Vous ne pouvez modifier que votre propre profil.
     change_password: Vous ne pouvez changer que votre propre mot de passe.
+    two_factor: Vous ne pouvez gérer l'authentification à deux facteurs que de votre propre compte.
 
 # Messages email
 email:

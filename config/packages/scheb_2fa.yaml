@@ -1,0 +1,15 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/current/configuration.html
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+
+    # TOTP (Google Authenticator, Authy, ...). Only users with a TOTP secret are asked for a code.
+    totp:
+        enabled: true
+        issuer: 'Template Symfony Twig'
+        template: auth/2fa_form.html.twig
+
+    # Single-use recovery codes, accepted in the same form as TOTP codes.
+    backup_codes:
+        enabled: true

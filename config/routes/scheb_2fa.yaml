@@ -1,0 +1,15 @@
+# Two-factor login routes share the locale prefix of the other web authentication routes.
+2fa_login:
+    path: /{_locale}/auth/2fa
+    requirements:
+        _locale: en|fr
+    defaults:
+        _controller: "scheb_two_factor.form_controller::form"
+        _locale: en
+
+2fa_login_check:
+    path: /{_locale}/auth/2fa_check
+    requirements:
+        _locale: en|fr
+    defaults:
+        _locale: en

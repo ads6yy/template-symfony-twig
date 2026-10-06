@@ -42,6 +42,16 @@
                             {% endif %}
                         </dd>
 
+                        <dt class="col-sm-3">{{ 'user.profile.two_factor.label'|trans }}</dt>
+                        <dd class="col-sm-9">
+                            {% if user.totpAuthenticationEnabled %}
+                                <span class="badge bg-success">{{ 'user.profile.two_factor.enabled'|trans }}</span>
+                                <small class="text-muted">{{ 'user.profile.two_factor.backup_codes_left'|trans({'%count%': user.countBackupCodes()}) }}</small>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ 'user.profile.two_factor.disabled'|trans }}</span>
+                            {% endif %}
+                        </dd>
+
                         <dt class="col-sm-3">{{ 'user.list.created_at'|trans }}</dt>
                         <dd class="col-sm-9">
                             {{ user.createdAt|localized_datetime }}
@@ -63,6 +73,34 @@
                     <a href="{{ path('app_user_change_password', {id: user.id}) }}" class="btn btn-info">
                         🔐 {{ 'user.profile.change_password'|trans }}
                     </a>
+                {% endif %}
+
+                {% if app.user.id == user.id %}
+                    {% if user.totpAuthenticationEnabled %}
+                        <form method="post" action="{{ path('app_two_factor_disable', {id: user.id}) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('{{ 'user.profile.two_factor.confirm_disable'|trans }}');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('two_factor_disable' ~ user.id) }}">
+                            <button type="submit" class="btn btn-outline-danger">
+                                🔓 {{ 'user.profile.two_factor.disable'|trans }}
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{{ path('app_two_factor_enable', {id: user.id}) }}" class="btn btn-success">
+                            🔑 {{ 'user.profile.two_factor.enable'|trans }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') and app.user.id != user.id and user.totpAuthenticationEnabled %}
+                    <form method="post" action="{{ path('app_two_factor_reset', {id: user.id}) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('{{ 'user.profile.two_factor.confirm_reset'|trans }}');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('two_factor_reset' ~ user.id) }}">
+                        <button type="submit" class="btn btn-outline-warning">
+                            ♻️ {{ 'user.profile.two_factor.reset'|trans }}
+                        </button>
+                    </form>
                 {% endif %}
 
                 {% if is_granted('ROLE_ADMIN') and app.user.id != user.id %}
