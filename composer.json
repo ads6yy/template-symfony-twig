@@ -37,7 +37,7 @@
         "symfony/twig-bundle": "8.0.*",
         "symfony/validator": "8.0.*",
         "symfony/workflow": "8.0.*",
-        "symfony/yaml": "8.0.*",
+        "symfony/yaml": "8.1.*",
         "symfonycasts/reset-password-bundle": "^1.25",
         "symfonycasts/verify-email-bundle": "^1.18",
         "systemsdk/phpcpd": "^8.3.0"
